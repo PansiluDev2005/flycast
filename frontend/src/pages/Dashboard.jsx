@@ -102,6 +102,29 @@ const Dashboard = () => {
   };
 
   const handleNotify = async (flightId, action) => {
+    const msg = action === 'Notify Crew'
+      ? `Crew for flight ${flightId} has been notified of the estimated delay.`
+      : `Gate reallocation has been requested for flight ${flightId}.`;
+
+    // Save real notification locally so it immediately shows in Navbar notifications
+    try {
+      const saved = localStorage.getItem('flycast_realtime_notifications');
+      let notifs = saved ? JSON.parse(saved) : [];
+      const newNotif = {
+        _id: `notif-${Date.now()}`,
+        flightId,
+        action,
+        message: msg,
+        type: 'alert',
+        read: false,
+        createdAt: new Date().toISOString()
+      };
+      notifs.unshift(newNotif);
+      localStorage.setItem('flycast_realtime_notifications', JSON.stringify(notifs));
+    } catch (e) {
+      console.warn('Notification store error:', e);
+    }
+
     try {
       const token = user?.token || 'mock-token';
       await axios.post('http://localhost:5000/api/notifications', { flightId, action }, {

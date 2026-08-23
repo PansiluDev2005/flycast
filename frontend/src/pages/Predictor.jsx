@@ -145,6 +145,29 @@ const Predictor = () => {
 
   const handleSaveToWatchlist = async () => {
     if (!result) return;
+    const storageKey = `flycast_watchlist_${user?.username || 'passenger'}`;
+    const newFlight = {
+      flight_id: result.flight_id,
+      carrier: carrier.toUpperCase(),
+      origin: origin.toUpperCase(),
+      destination: dest.toUpperCase(),
+      scheduled_departure: date ? new Date(date).toISOString() : new Date().toISOString(),
+      delay_probability: result.delay_probability,
+      estimated_minutes: result.estimated_delay_minutes
+    };
+
+    // Save to localStorage immediately for instant persistence
+    try {
+      const saved = localStorage.getItem(storageKey);
+      let list = saved ? JSON.parse(saved) : [];
+      if (!list.some(f => f.flight_id === newFlight.flight_id)) {
+        list.push(newFlight);
+        localStorage.setItem(storageKey, JSON.stringify(list));
+      }
+    } catch (e) {
+      console.warn('Local storage error:', e);
+    }
+
     try {
       const token = user?.token || 'mock-token';
       await axios.post('http://localhost:5000/api/watchlist', {

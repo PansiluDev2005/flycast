@@ -10,7 +10,6 @@ import {
   Navigation, 
   Trash2, 
   Plus, 
-  Calendar, 
   ShieldCheck, 
   Car, 
   Luggage, 
@@ -22,82 +21,58 @@ const PassengerDashboard = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchWatchlist();
-  }, []);
+  const storageKey = `flycast_watchlist_${user?.username || 'passenger'}`;
 
   const fetchWatchlist = async () => {
     try {
       const res = await axios.get('http://localhost:5000/api/watchlist', {
-        headers: { Authorization: `Bearer ${user?.token}` }
+        headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
-      if (res.data.flights && res.data.flights.length > 0) {
-        setWatchlist(res.data.flights);
-      } else {
-        setWatchlist([
-          {
-            _id: 'mock1',
-            flight_id: 'AA123',
-            carrier: 'AA',
-            origin: 'JFK',
-            destination: 'LAX',
-            scheduled_departure: new Date(Date.now() + 1000 * 60 * 60 * 4).toISOString(),
-            delay_probability: 0.14,
-            estimated_minutes: 0
-          },
-          {
-            _id: 'mock2',
-            flight_id: 'DL456',
-            carrier: 'DL',
-            origin: 'ATL',
-            destination: 'MIA',
-            scheduled_departure: new Date(Date.now() + 1000 * 60 * 60 * 7.5).toISOString(),
-            delay_probability: 0.82,
-            estimated_minutes: 45
-          }
-        ]);
-      }
+      
+      const flights = res.data?.flights || (Array.isArray(res.data) ? res.data : []);
+      setWatchlist(flights);
+      localStorage.setItem(storageKey, JSON.stringify(flights));
     } catch (err) {
-      setWatchlist([
-        {
-          _id: 'mock1',
-          flight_id: 'AA123',
-          carrier: 'AA',
-          origin: 'JFK',
-          destination: 'LAX',
-          scheduled_departure: new Date(Date.now() + 1000 * 60 * 60 * 4).toISOString(),
-          delay_probability: 0.14,
-          estimated_minutes: 0
-        },
-        {
-          _id: 'mock2',
-          flight_id: 'DL456',
-          carrier: 'DL',
-          origin: 'ATL',
-          destination: 'MIA',
-          scheduled_departure: new Date(Date.now() + 1000 * 60 * 60 * 7.5).toISOString(),
-          delay_probability: 0.82,
-          estimated_minutes: 45
+      console.warn('Backend watchlist offline, loading local user store:', err);
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          setWatchlist(JSON.parse(saved));
+        } catch (e) {
+          setWatchlist([]);
         }
-      ]);
+      } else {
+        setWatchlist([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchWatchlist();
+  }, [user]);
+
   const removeFromWatchlist = async (flightId) => {
+    // 1. Update UI state immediately
+    const updated = watchlist.filter(f => f.flight_id !== flightId && f._id !== flightId);
+    setWatchlist(updated);
+    
+    // 2. Persist deletion in local storage so refresh never revives it
+    localStorage.setItem(storageKey, JSON.stringify(updated));
+
+    // 3. Delete from backend database
     try {
       await axios.delete(`http://localhost:5000/api/watchlist/${flightId}`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
+        headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
-      setWatchlist(watchlist.filter(f => f.flight_id !== flightId && f._id !== flightId));
     } catch (err) {
-      setWatchlist(watchlist.filter(f => f.flight_id !== flightId && f._id !== flightId));
+      console.warn('Backend delete notification:', err);
     }
   };
 
   const calculateOptimalDeparture = (scheduledDate, delayMins = 0) => {
-    const baseDate = new Date(scheduledDate);
+    const baseDate = new Date(scheduledDate || Date.now());
     baseDate.setMinutes(baseDate.getMinutes() + (delayMins || 0));
     baseDate.setHours(baseDate.getHours() - 2);
     baseDate.setMinutes(baseDate.getMinutes() - 45);
@@ -105,6 +80,7 @@ const PassengerDashboard = () => {
   };
 
   const calculateHoursUntil = (scheduledDate) => {
+    if (!scheduledDate) return '0h 0m';
     const diffMs = new Date(scheduledDate) - new Date();
     const diffHours = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60)));
     const diffMins = Math.max(0, Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)));
@@ -154,13 +130,14 @@ const PassengerDashboard = () => {
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2 font-heading">Your Watchlist is Empty</h3>
             <p className="text-slate-600 text-sm max-w-md mb-8 leading-relaxed">
-              Use our AI Flight Delay Predictor to evaluate any upcoming flight and save it to your personalized travel dashboard.
+              You currently have no saved flights. Use our AI Flight Delay Predictor to evaluate any upcoming flight and save it to your personalized travel dashboard.
             </p>
             <Link
               to="/predictor"
-              className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm transition-all shadow-md"
+              className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm transition-all shadow-md flex items-center gap-2"
             >
-              Search & Predict a Flight ➔
+              <Plus className="w-4 h-4" />
+              <span>Search & Add a Flight</span>
             </Link>
           </div>
         ) : (
@@ -211,7 +188,7 @@ const PassengerDashboard = () => {
 
                       <div className="flex flex-col items-center gap-1 px-4">
                         <span className="text-[10px] font-mono-code text-sky-700 font-bold uppercase tracking-wider">
-                          {(flight.delay_probability * 100).toFixed(0)}% Delay Risk
+                          {((flight.delay_probability || 0) * 100).toFixed(0)}% Delay Risk
                         </span>
                         <div className="w-24 sm:w-36 h-0.5 bg-slate-300 relative flex items-center justify-center">
                           <Plane className="w-4 h-4 text-sky-600 absolute -rotate-45" />

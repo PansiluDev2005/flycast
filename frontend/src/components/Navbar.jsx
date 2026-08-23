@@ -32,40 +32,31 @@ const Navbar = () => {
     if (user && (user.role === 'dispatcher' || user.role === 'admin')) {
       try {
         const res = await axios.get('http://localhost:5000/api/notifications', {
-          headers: { Authorization: `Bearer ${user.token}` }
+          headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
         });
-        setNotifications(res.data || []);
+        const notifs = Array.isArray(res.data) ? res.data : [];
+        setNotifications(notifs);
+        localStorage.setItem('flycast_realtime_notifications', JSON.stringify(notifs));
       } catch (err) {
-        setNotifications([
-          {
-            _id: 'notif-1',
-            message: 'High Delay Alert: DL456 (ATL ➔ MIA) projected +45m delay.',
-            type: 'alert',
-            createdAt: new Date().toISOString(),
-            read: false
-          },
-          {
-            _id: 'notif-2',
-            message: 'Gate Reallocation notice received for Flight AA123.',
-            type: 'info',
-            createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-            read: false
-          },
-          {
-            _id: 'notif-3',
-            message: 'Random Forest Model retrained with 94.8% accuracy.',
-            type: 'system',
-            createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-            read: true
+        const saved = localStorage.getItem('flycast_realtime_notifications');
+        if (saved) {
+          try {
+            setNotifications(JSON.parse(saved));
+          } catch (e) {
+            setNotifications([]);
           }
-        ]);
+        } else {
+          setNotifications([]);
+        }
       }
+    } else {
+      setNotifications([]);
     }
   };
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(fetchNotifications, 15000);
     return () => clearInterval(interval);
   }, [user]);
 
@@ -80,13 +71,16 @@ const Navbar = () => {
   };
 
   const markAsRead = async (id) => {
+    const updated = notifications.map(n => n._id === id ? { ...n, read: true } : n);
+    setNotifications(updated);
+    localStorage.setItem('flycast_realtime_notifications', JSON.stringify(updated));
+
     try {
       await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
-        headers: { Authorization: `Bearer ${user.token}` }
+        headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
-      setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
     } catch (err) {
-      setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
+      console.warn('Mark as read synced locally:', err);
     }
   };
 
