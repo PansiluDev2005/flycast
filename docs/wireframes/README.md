@@ -2,7 +2,17 @@
 
 This directory contains the master architectural wireframe diagrams, component specifications, and interaction blueprints for the **Flycast Aviation Intelligence Platform**.
 
-Each wireframe is provided as a standalone, resolution-independent **SVG vector blueprint** designed with aerospace technical schematics, clear component hierarchies, and exact field-level fidelity to the React 19 frontend implementation.
+Each wireframe is provided as a standalone, resolution-independent **SVG vector blueprint** designed with classic UX layout structures, placeholder boxes, component hierarchies, responsive mobile layouts, and exact field-level fidelity to the React 19 frontend implementation.
+
+---
+
+## 🗺️ Master Multi-Page UX Wireframe Flow & Site Layout
+
+The following master diagram maps out the full multi-page UX layout structure, showing the **Mobile Viewport**, **Home Landing Page**, **Predictor & Features Page**, and **Dispatcher Operations / Admin Console**, connected via responsive breakpoint pointers and user flow navigation arrows:
+
+<div align="center">
+  <img src="flycast_ux_wireframe_flow.svg" alt="Master Multi-Page UX Wireframe Flow" width="100%">
+</div>
 
 ---
 
@@ -10,6 +20,7 @@ Each wireframe is provided as a standalone, resolution-independent **SVG vector 
 
 | Wireframe ID | View / Screen | Target Route | Primary User Role | Vector Blueprint Link |
 | :--- | :--- | :--- | :--- | :--- |
+| **WF-00** | [Master Multi-Page UX Wireframe Flow](#-master-multi-page-ux-wireframe-flow--site-layout) | Platform Flow | `All Roles & Responsive` | [flycast_ux_wireframe_flow.svg](flycast_ux_wireframe_flow.svg) |
 | **WF-01** | [Passenger Flight Predictor & Trajectory HUD](#1-wf-01--passenger-flight-delay-predictor--trajectory-hud) | `/predictor` | `Passenger`, `Operator` | [01_passenger_predictor_wireframe.svg](01_passenger_predictor_wireframe.svg) |
 | **WF-02** | [Digital Boarding Pass & Personal Watchlist](#2-wf-02--digital-boarding-pass--passenger-watchlist) | `/passenger` | `Passenger` | [02_passenger_watchlist_wireframe.svg](02_passenger_watchlist_wireframe.svg) |
 | **WF-03** | [Dispatcher Operations Command & Bulk Triage](#3-wf-03--dispatcher-operations-command--bulk-manifest-triage) | `/dashboard` | `Flight Dispatcher` | [03_dispatcher_dashboard_wireframe.svg](03_dispatcher_dashboard_wireframe.svg) |

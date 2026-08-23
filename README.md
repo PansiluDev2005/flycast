@@ -362,10 +362,20 @@ classDiagram
 
 The Flycast user experience is designed with high-density aerospace telemetry standards, daylight frosted glass aesthetics, and strict Role-Based Access Control (RBAC). 
 
+### 🗺️ Master Multi-Page UX Wireframe Flow & Site Layout
+The full multi-page UX layout structure, showing the **Mobile Viewport**, **Home Landing Page**, **Predictor & Features Page**, and **Dispatcher Operations / Admin Console**, connected via responsive breakpoint pointers and user flow navigation arrows:
+
+<div align="center">
+  <img src="docs/wireframes/flycast_ux_wireframe_flow.svg" alt="Master Multi-Page UX Wireframe Flow" width="100%">
+</div>
+
+---
+
 Comprehensive standalone vector blueprints and developer specifications are maintained in the [`docs/wireframes/`](docs/wireframes/README.md) directory:
 
 | Blueprint ID | View / Screen | Target Route | Primary User Role | Vector Schematic |
 | :--- | :--- | :--- | :--- | :--- |
+| **WF-00** | **[Master Multi-Page UX Wireframe Flow](#-master-multi-page-ux-wireframe-flow--site-layout)** | Platform Flow | `All Roles & Responsive` | [View SVG](docs/wireframes/flycast_ux_wireframe_flow.svg) |
 | **WF-01** | **[Passenger Flight Delay Predictor & Trajectory HUD](#1-passenger-flight-delay-predictor--trajectory-hud-wf-01)** | `/predictor` | `Passenger`, `Operator` | [View SVG](docs/wireframes/01_passenger_predictor_wireframe.svg) |
 | **WF-02** | **[Digital Boarding Pass & Personal Watchlist](#2-digital-boarding-pass--passenger-watchlist-wf-02)** | `/passenger` | `Passenger` | [View SVG](docs/wireframes/02_passenger_watchlist_wireframe.svg) |
 | **WF-03** | **[Dispatcher Operations Command & Bulk Manifest Triage](#3-dispatcher-operations-command--bulk-manifest-triage-wf-03)** | `/dashboard` | `Flight Dispatcher` | [View SVG](docs/wireframes/03_dispatcher_dashboard_wireframe.svg) |
