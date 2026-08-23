@@ -14,7 +14,11 @@ import {
   Calendar, 
   Milestone, 
   TrendingUp,
-  Cpu
+  Cpu,
+  Megaphone,
+  Shield,
+  Send,
+  Radio
 } from 'lucide-react';
 
 const PRESET_FLIGHTS = [
@@ -132,32 +136,73 @@ const Predictor = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      if (res.data && res.data.length > 0) {
-        setResult(res.data[0]);
-      } else {
-        setResult(res.data);
-      }
+      let resData = (res.data && res.data.length > 0) ? res.data[0] : res.data;
+      setResult(resData);
+
+      // Record in Real-Time Prediction Audit Log for Admin Console
+      try {
+        const auditLog = JSON.parse(localStorage.getItem('flycast_prediction_audit_log') || '[]');
+        const record = {
+          _id: `pred-${Date.now()}`,
+          flight_id: flightId,
+          carrier: carrier.toUpperCase(),
+          origin: origin.toUpperCase(),
+          dest: dest.toUpperCase(),
+          date,
+          crs_dep_time: crsDepTime,
+          distance,
+          delay_probability: resData.delay_probability,
+          estimated_delay_minutes: resData.estimated_delay_minutes || 0,
+          status: resData.status,
+          timestamp: new Date().toISOString()
+        };
+        const updatedLog = [record, ...auditLog.filter(p => p.flight_id !== flightId || p.date !== date)].slice(0, 50);
+        localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(updatedLog));
+      } catch (e) {}
+
     } catch (err) {
       console.warn('API error, using local ML simulation fallback:', err);
       
-      // Fallback calculation for rich demonstration
+      // Fallback calculation
       const depHour = parseInt(crsDepTime.slice(0, 2) || '12', 10);
       const isPeak = depHour >= 14 && depHour <= 19;
       const isHighCarrier = carrier.toUpperCase() === 'DL' || carrier.toUpperCase() === 'B6';
       
-      let mockProb = 0.18;
+      let mockProb = 0.28;
       if (isPeak) mockProb += 0.45;
       if (isHighCarrier) mockProb += 0.22;
       mockProb = Math.min(0.92, Math.max(0.12, mockProb));
       
       const mockDelayMins = mockProb > 0.5 ? Math.round(25 + mockProb * 35) : 0;
       
-      setResult({
+      const fallbackResult = {
         flight_id: flightId,
         delay_probability: mockProb,
         estimated_delay_minutes: mockDelayMins,
         status: mockProb > 0.5 ? 'Delayed' : 'On Time'
-      });
+      };
+
+      setResult(fallbackResult);
+
+      try {
+        const auditLog = JSON.parse(localStorage.getItem('flycast_prediction_audit_log') || '[]');
+        const record = {
+          _id: `pred-${Date.now()}`,
+          flight_id: flightId,
+          carrier: carrier.toUpperCase(),
+          origin: origin.toUpperCase(),
+          dest: dest.toUpperCase(),
+          date,
+          crs_dep_time: crsDepTime,
+          distance,
+          delay_probability: mockProb,
+          estimated_delay_minutes: mockDelayMins,
+          status: fallbackResult.status,
+          timestamp: new Date().toISOString()
+        };
+        const updatedLog = [record, ...auditLog.filter(p => p.flight_id !== flightId || p.date !== date)].slice(0, 50);
+        localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(updatedLog));
+      } catch (e) {}
     } finally {
       setLoading(false);
     }
@@ -206,6 +251,51 @@ const Predictor = () => {
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4000);
     }
+  };
+
+  const [adminBroadcastMsg, setAdminBroadcastMsg] = useState('');
+
+  const handleAdminBroadcast = async (actionType = 'Priority Delay Advisory') => {
+    if (!result) return;
+    const probPct = (result.delay_probability * 100).toFixed(0);
+    const msg = `[ADMIN DIRECTIVE] Flight ${result.flight_id} (${origin} ➔ ${dest}) on ${date} flagged with ${probPct}% delay risk (+${result.estimated_delay_minutes}m hold). Action: ${actionType}.`;
+    
+    const newNotif = {
+      _id: `notif-admin-${Date.now()}`,
+      flightId: result.flight_id,
+      action: actionType,
+      message: msg,
+      priority: result.delay_probability > 0.7 ? 'critical' : 'warning',
+      read: false,
+      createdAt: new Date().toISOString(),
+      sender: user?.username || 'Administrator',
+      senderRole: 'admin'
+    };
+
+    // Save to localStorage for instant real-time synchronization
+    try {
+      const saved = JSON.parse(localStorage.getItem('flycast_realtime_notifications') || '[]');
+      saved.unshift(newNotif);
+      localStorage.setItem('flycast_realtime_notifications', JSON.stringify(saved));
+    } catch (e) {
+      console.warn('Local storage error:', e);
+    }
+
+    // Send to backend
+    try {
+      const token = user?.token || 'mock-token';
+      await axios.post('http://localhost:5000/api/notifications', {
+        flightId: result.flight_id,
+        action: actionType,
+        message: msg,
+        priority: newNotif.priority
+      }, { headers: { Authorization: `Bearer ${token}` } });
+    } catch (err) {
+      console.warn('Backend notification broadcast:', err);
+    }
+
+    setAdminBroadcastMsg(`Operational Directive dispatched to all Dispatchers: "${actionType}" for ${result.flight_id}`);
+    setTimeout(() => setAdminBroadcastMsg(''), 5000);
   };
 
   const calculateLeaveHomeTime = (depTimeHHMM, delayMins = 0) => {
@@ -667,6 +757,50 @@ const Predictor = () => {
                   <span>Save to My Watchlist</span>
                 </button>
               </div>
+
+              {/* ADMIN-EXCLUSIVE EXECUTIVE DISPATCHER DIRECTIVE PANEL */}
+              {user?.role === 'admin' && (
+                <div className="p-5 rounded-2xl bg-purple-50/80 border border-purple-200 flex flex-col gap-3.5 shadow-sm mt-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-mono-code text-purple-900 font-bold uppercase tracking-wider">
+                      <Shield className="w-4 h-4 text-purple-600" />
+                      <span>Admin Executive Command • Dispatcher Broadcast</span>
+                    </div>
+                    <span className="text-[10px] font-mono-code bg-purple-200 text-purple-800 px-2 py-0.5 rounded font-bold">
+                      ADMIN OVERRIDE
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Broadcast immediate AI operational advisories to all active Dispatcher consoles for flight <strong className="text-slate-900">{result.flight_id}</strong> on scheduled date <strong>{date}</strong>.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <button
+                      onClick={() => handleAdminBroadcast('Priority Delay Directive')}
+                      className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold font-mono-code flex items-center justify-center gap-2 shadow-sm transition-all"
+                    >
+                      <Megaphone className="w-3.5 h-3.5" />
+                      <span>Broadcast Alert to Dispatchers</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleAdminBroadcast('Mandatory Gate Reallocation')}
+                      className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-100/60 border border-purple-300 text-purple-800 text-xs font-bold font-mono-code flex items-center justify-center gap-2 shadow-sm transition-all"
+                    >
+                      <Radio className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Order Gate Reallocation</span>
+                    </button>
+                  </div>
+
+                  {adminBroadcastMsg && (
+                    <div className="p-3 rounded-xl bg-purple-100 text-purple-900 text-xs font-mono-code font-bold flex items-center gap-2 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                      <span>{adminBroadcastMsg}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {savedSuccess && (
                 <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono-code flex items-center gap-2 font-bold">

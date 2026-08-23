@@ -14,8 +14,92 @@ import {
   Database, 
   Terminal, 
   Search,
-  Check
+  Check,
+  Megaphone,
+  PlaneTakeoff,
+  Radio,
+  AlertTriangle,
+  Clock,
+  Send,
+  Sparkles,
+  Filter,
+  Calendar,
+  Layers,
+  ArrowRight
 } from 'lucide-react';
+
+const INITIAL_PREDICTIONS = [
+  {
+    _id: 'pred-init-1',
+    flight_id: 'UL225',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'DXB',
+    date: '2026-08-25',
+    crs_dep_time: '1845',
+    distance: 2045,
+    delay_probability: 0.74,
+    estimated_delay_minutes: 35,
+    status: 'Delayed',
+    timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString()
+  },
+  {
+    _id: 'pred-init-2',
+    flight_id: 'DL456',
+    carrier: 'DL',
+    origin: 'ATL',
+    dest: 'MIA',
+    date: '2026-08-25',
+    crs_dep_time: '1430',
+    distance: 594,
+    delay_probability: 0.82,
+    estimated_delay_minutes: 45,
+    status: 'Delayed',
+    timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString()
+  },
+  {
+    _id: 'pred-init-3',
+    flight_id: 'UL503',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'LHR',
+    date: '2026-08-25',
+    crs_dep_time: '1300',
+    distance: 5410,
+    delay_probability: 0.38,
+    estimated_delay_minutes: 0,
+    status: 'On Time',
+    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString()
+  },
+  {
+    _id: 'pred-init-4',
+    flight_id: 'UL101',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'MLE',
+    date: '2026-08-26',
+    crs_dep_time: '0720',
+    distance: 483,
+    delay_probability: 0.18,
+    estimated_delay_minutes: 0,
+    status: 'On Time',
+    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString()
+  },
+  {
+    _id: 'pred-init-5',
+    flight_id: 'EK651',
+    carrier: 'EK',
+    origin: 'CMB',
+    dest: 'DXB',
+    date: '2026-08-26',
+    crs_dep_time: '1950',
+    distance: 2045,
+    delay_probability: 0.68,
+    estimated_delay_minutes: 26,
+    status: 'Delayed',
+    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString()
+  }
+];
 
 const Admin = () => {
   const { user } = useContext(AuthContext);
@@ -26,6 +110,18 @@ const Admin = () => {
   const [retrainLogs, setRetrainLogs] = useState([]);
   const [retrainSuccess, setRetrainSuccess] = useState(false);
   
+  // Real-time Prediction Stream & Dispatcher Directives
+  const [predictionStream, setPredictionStream] = useState([]);
+  const [streamFilter, setStreamFilter] = useState('all');
+  const [streamSearch, setStreamSearch] = useState('');
+  const [directiveToast, setDirectiveToast] = useState('');
+
+  // Custom Advisory Composer
+  const [showComposer, setShowComposer] = useState(false);
+  const [composerFlight, setComposerFlight] = useState('');
+  const [composerPriority, setComposerPriority] = useState('critical');
+  const [composerDirective, setComposerDirective] = useState('');
+
   // New User Form State
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -38,7 +134,25 @@ const Admin = () => {
 
   useEffect(() => {
     fetchData();
+    loadPredictionStream();
   }, []);
+
+  const loadPredictionStream = () => {
+    try {
+      const saved = localStorage.getItem('flycast_prediction_audit_log');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPredictionStream(parsed);
+          return;
+        }
+      }
+      setPredictionStream(INITIAL_PREDICTIONS);
+      localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(INITIAL_PREDICTIONS));
+    } catch (e) {
+      setPredictionStream(INITIAL_PREDICTIONS);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -69,6 +183,88 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickDirective = async (flight, actionType = 'Priority Delay Advisory', priority = 'critical') => {
+    const probPct = ((flight.delay_probability || 0) * 100).toFixed(0);
+    const holdMins = flight.estimated_delay_minutes || 0;
+    const msg = `[ADMIN EXECUTIVE DIRECTIVE] Flight ${flight.flight_id} (${flight.origin} ➔ ${flight.dest}) on ${flight.date || 'today'} flagged with ${probPct}% delay risk (+${holdMins}m hold). Mandate: ${actionType}.`;
+
+    const newNotif = {
+      _id: `notif-admin-${Date.now()}`,
+      flightId: flight.flight_id,
+      action: actionType,
+      message: msg,
+      priority: priority,
+      read: false,
+      createdAt: new Date().toISOString(),
+      sender: user?.username || 'Admin',
+      senderRole: 'admin'
+    };
+
+    // Save locally for instant real-time sync across sessions
+    try {
+      const saved = JSON.parse(localStorage.getItem('flycast_realtime_notifications') || '[]');
+      saved.unshift(newNotif);
+      localStorage.setItem('flycast_realtime_notifications', JSON.stringify(saved));
+    } catch (e) {
+      console.warn('Storage sync error:', e);
+    }
+
+    // Dispatch to Node API backend
+    try {
+      const token = user?.token || 'mock-token';
+      await axios.post('http://localhost:5000/api/notifications', {
+        flightId: flight.flight_id,
+        action: actionType,
+        message: msg,
+        priority
+      }, { headers: { Authorization: `Bearer ${token}` } });
+    } catch (err) {
+      console.warn('Backend notification dispatch:', err);
+    }
+
+    setDirectiveToast(`Dispatched Executive Directive to Dispatchers: "${actionType}" for ${flight.flight_id}`);
+    setTimeout(() => setDirectiveToast(''), 5000);
+  };
+
+  const handleSendCustomComposer = async (e) => {
+    e.preventDefault();
+    if (!composerFlight || !composerDirective) return;
+
+    const newNotif = {
+      _id: `notif-admin-${Date.now()}`,
+      flightId: composerFlight.toUpperCase(),
+      action: 'Executive Directive',
+      message: `[ADMIN DIRECTIVE] ${composerFlight.toUpperCase()}: ${composerDirective}`,
+      priority: composerPriority,
+      read: false,
+      createdAt: new Date().toISOString(),
+      sender: user?.username || 'Admin',
+      senderRole: 'admin'
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem('flycast_realtime_notifications') || '[]');
+      saved.unshift(newNotif);
+      localStorage.setItem('flycast_realtime_notifications', JSON.stringify(saved));
+    } catch (e) {}
+
+    try {
+      const token = user?.token || 'mock-token';
+      await axios.post('http://localhost:5000/api/notifications', {
+        flightId: composerFlight.toUpperCase(),
+        action: 'Executive Directive',
+        message: newNotif.message,
+        priority: composerPriority
+      }, { headers: { Authorization: `Bearer ${token}` } });
+    } catch (err) {}
+
+    setDirectiveToast(`Custom Directive dispatched to all Dispatchers for flight ${composerFlight.toUpperCase()}`);
+    setShowComposer(false);
+    setComposerFlight('');
+    setComposerDirective('');
+    setTimeout(() => setDirectiveToast(''), 5000);
   };
 
   const handleRoleChange = async (userId, role) => {
@@ -135,7 +331,7 @@ const Admin = () => {
     setRetrainLogs([
       '⚡ [INIT] Triggering asynchronous ML Pipeline on backend-ml microservice...',
       '📥 [1/4] Ingesting latest 250,000 historical flight records...',
-      '🔄 [2/4] Fitting LabelEncoders (le_carrier.pkl, le_origin.pkl, le_dest.pkl)...',
+      '🔄 [2/4] Fitting LabelEncoders with Sri Lanka (CMB, UL) and International profiles...',
       '🌲 [3/4] Optimizing Random Forest Ensemble (100 estimators, max_depth=12)...',
       '📊 [4/4] Validating Decision Tree Regressor (RMSE: 8.2m, Accuracy: 95.1%)...',
       '💾 [SAVE] Serializing models to backend-ml/models directory...',
@@ -144,11 +340,9 @@ const Admin = () => {
 
     try {
       await axios.post('http://localhost:5000/api/admin/retrain', {}, {
-        headers: { Authorization: `Bearer ${user.token}` }
+        headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
-    } catch (err) {
-      // Graceful fallback simulation
-    }
+    } catch (err) {}
 
     setTimeout(() => {
       setRetraining(false);
@@ -165,6 +359,24 @@ const Admin = () => {
     );
   }
 
+  const filteredStream = predictionStream.filter(f => {
+    const isDelayed = (f.delay_probability || 0) > 0.5;
+    const isCMB = f.origin === 'CMB' || f.dest === 'CMB' || f.carrier === 'UL';
+    
+    const matchesFilter = 
+      streamFilter === 'all' ? true :
+      streamFilter === 'delayed' ? isDelayed :
+      streamFilter === 'ontime' ? !isDelayed :
+      streamFilter === 'cmb' ? isCMB : true;
+
+    const matchesSearch = streamSearch === '' || 
+      f.flight_id.toLowerCase().includes(streamSearch.toLowerCase()) ||
+      f.origin.toLowerCase().includes(streamSearch.toLowerCase()) ||
+      f.dest.toLowerCase().includes(streamSearch.toLowerCase());
+
+    return matchesFilter && matchesSearch;
+  });
+
   const filteredUsers = users.filter(u => {
     const matchesFilter = viewFilter === 'all' || u.role === viewFilter;
     const matchesSearch = searchQuery === '' || u.username.toLowerCase().includes(searchQuery.toLowerCase());
@@ -172,7 +384,7 @@ const Admin = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto flex flex-col gap-8">
+    <div className="max-w-7xl mx-auto flex flex-col gap-10">
       
       {/* Page Header & Retrain Action */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200">
@@ -183,19 +395,110 @@ const Admin = () => {
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-heading">System Governance & ML Ops</h1>
           <p className="text-slate-600 text-sm mt-1">
-            Real-time microservice telemetry, model governance diagnostics, and Role-Based Access Control (RBAC).
+            Real-time flight risk telemetry, predictive Dispatcher directives, and access governance.
           </p>
         </div>
 
-        <button 
-          onClick={handleRetrain}
-          disabled={retraining}
-          className="px-6 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2.5 text-sm shrink-0"
-        >
-          <RefreshCw className={`w-4 h-4 ${retraining ? 'animate-spin' : ''}`} />
-          <span>{retraining ? 'Retraining ML Pipeline...' : 'Trigger ML Model Retrain'}</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button 
+            onClick={() => setShowComposer(!showComposer)}
+            className="px-5 py-3 bg-purple-100 hover:bg-purple-200 border border-purple-300 text-purple-900 font-bold rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 text-xs font-mono-code"
+          >
+            <Megaphone className="w-4 h-4 text-purple-600" />
+            <span>Compose Dispatcher Directive</span>
+          </button>
+
+          <button 
+            onClick={handleRetrain}
+            disabled={retraining}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 text-xs font-mono-code shrink-0"
+          >
+            <RefreshCw className={`w-4 h-4 ${retraining ? 'animate-spin' : ''}`} />
+            <span>{retraining ? 'Retraining ML Pipeline...' : 'Trigger ML Retrain'}</span>
+          </button>
+        </div>
       </div>
+
+      {/* Operational Directive Toast */}
+      {directiveToast && (
+        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-300 text-purple-900 text-sm font-mono-code flex items-center gap-3 animate-in fade-in slide-in-from-top-2 font-bold shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-purple-600 shrink-0" />
+          <span>{directiveToast}</span>
+        </div>
+      )}
+
+      {/* Custom Directive Composer Drawer / Modal */}
+      {showComposer && (
+        <div className="glass-panel p-6 sm:p-8 rounded-3xl border-purple-300 bg-white shadow-xl animate-in fade-in zoom-in-95">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+            <div className="flex items-center gap-2.5">
+              <Megaphone className="w-5 h-5 text-purple-600" />
+              <h3 className="text-xl font-bold text-slate-900 font-heading">Broadcast Operational Directive to Dispatchers</h3>
+            </div>
+            <button 
+              onClick={() => setShowComposer(false)}
+              className="text-xs text-slate-500 hover:text-slate-900 font-mono-code font-bold"
+            >
+              ✕ Close
+            </button>
+          </div>
+
+          <form onSubmit={handleSendCustomComposer} className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-xs font-mono-code text-slate-700 font-bold uppercase mb-2">Target Flight ID</label>
+              <input 
+                type="text"
+                value={composerFlight}
+                onChange={(e) => setComposerFlight(e.target.value.toUpperCase())}
+                placeholder="e.g. UL225 or DL456"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono-code font-bold focus:outline-none focus:border-purple-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono-code text-slate-700 font-bold uppercase mb-2">Priority Level</label>
+              <select
+                value={composerPriority}
+                onChange={(e) => setComposerPriority(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs font-mono-code font-bold focus:outline-none focus:border-purple-500"
+              >
+                <option value="critical">🔴 CRITICAL (Immediate Gate/Crew Intervention)</option>
+                <option value="warning">🟡 WARNING (Advisory Hold Projected)</option>
+                <option value="info">🔵 INFORMATIONAL (Operational Monitoring)</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-3">
+              <label className="block text-xs font-mono-code text-slate-700 font-bold uppercase mb-2">Executive Directive Message</label>
+              <textarea
+                value={composerDirective}
+                onChange={(e) => setComposerDirective(e.target.value)}
+                placeholder="e.g. Severe weather window expected. Reallocate departure gate slot and mandate 30m passenger arrival buffer."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs font-mono-code text-slate-900 focus:outline-none focus:border-purple-500 h-24"
+                required
+              ></textarea>
+            </div>
+
+            <div className="md:col-span-3 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowComposer(false)}
+                className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold font-mono-code"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold font-mono-code shadow-md flex items-center gap-2"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>Broadcast to All Dispatchers</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* 1. Multi-Microservice Health Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -241,9 +544,9 @@ const Admin = () => {
           </div>
 
           <div className="flex items-baseline justify-between pt-2 border-t border-slate-100">
-            <span className="text-xs text-slate-500 font-mono-code font-bold">Total Invocations:</span>
+            <span className="text-xs text-slate-500 font-mono-code font-bold">Audited Flight Inferences:</span>
             <span className="text-lg font-bold font-mono-code text-blue-700">
-              {metrics?.total_predictions ? metrics.total_predictions.toLocaleString() : '14,820'}
+              {predictionStream.length} Predictions
             </span>
           </div>
         </div>
@@ -266,7 +569,7 @@ const Admin = () => {
           </div>
 
           <div className="flex items-baseline justify-between pt-2 border-t border-slate-100">
-            <span className="text-xs text-slate-500 font-mono-code font-bold">Registered Users:</span>
+            <span className="text-xs text-slate-500 font-mono-code font-bold">Active Operators:</span>
             <span className="text-lg font-bold font-mono-code text-purple-700">{users.length} Accounts</span>
           </div>
         </div>
@@ -301,7 +604,165 @@ const Admin = () => {
         </div>
       )}
 
-      {/* 3. Main Grid: User RBAC Table Left, Add Account Form Right */}
+      {/* 3. NEW FEATURE: LIVE PREDICTION AUDIT STREAM & DISPATCHER ADVISORY CONSOLE */}
+      <section className="glass-panel p-6 sm:p-8 rounded-3xl border-purple-200 bg-white shadow-md flex flex-col gap-6">
+        
+        {/* Header & Filters */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <div className="flex items-center gap-2 text-purple-700 text-xs font-mono-code font-bold uppercase tracking-wider mb-1">
+              <Radio className="w-3.5 h-3.5 animate-pulse text-purple-600" />
+              <span>Live AI Flight Risk Feed & Directive Center</span>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 font-heading">Predictor Stream & Dispatcher Directives</h3>
+            <p className="text-slate-500 text-xs mt-0.5">
+              Review today's and future scheduled flights evaluated by AI. Send 1-click operational mandates directly to Dispatcher consoles.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            
+            {/* Search */}
+            <div className="relative">
+              <input 
+                type="text" 
+                value={streamSearch}
+                onChange={(e) => setStreamSearch(e.target.value)}
+                placeholder="Search flight / airport..."
+                className="bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-purple-500 pr-8"
+              />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3" />
+            </div>
+
+            {/* Filter Dropdown */}
+            <select
+              value={streamFilter}
+              onChange={(e) => setStreamFilter(e.target.value)}
+              className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono-code text-slate-700 font-bold focus:outline-none focus:border-purple-500"
+            >
+              <option value="all">All Evaluated Flights</option>
+              <option value="delayed">⚠️ High Delay Risk (&gt;50%)</option>
+              <option value="ontime">✓ On Time Expected</option>
+              <option value="cmb">🇱🇰 Sri Lanka / Colombo (CMB)</option>
+            </select>
+
+          </div>
+        </div>
+
+        {/* Prediction Stream Cards */}
+        <div className="flex flex-col gap-4">
+          {filteredStream.map((item, idx) => {
+            const isDelayed = (item.delay_probability || 0) > 0.5;
+            const probPct = ((item.delay_probability || 0) * 100).toFixed(0);
+
+            return (
+              <div 
+                key={item._id || idx}
+                className={`p-5 rounded-2xl border transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-5 ${
+                  isDelayed 
+                    ? 'bg-red-50/40 border-red-200 hover:border-red-400' 
+                    : 'bg-slate-50/60 border-slate-200 hover:border-sky-300'
+                }`}
+              >
+                {/* Flight & Route Info */}
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-mono-code font-bold text-sm shadow-sm ${
+                    isDelayed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                  }`}>
+                    <PlaneTakeoff className="w-6 h-6 -rotate-45" />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h4 className="text-lg font-bold font-mono-code text-slate-900">{item.flight_id}</h4>
+                      <span className="text-xs font-mono-code text-slate-500 font-bold">
+                        {item.origin} ➔ {item.dest}
+                      </span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono-code font-bold uppercase ${
+                        isDelayed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                      }`}>
+                        {isDelayed ? 'DELAY PROJECTED' : 'ON-TIME'}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 mt-1 font-mono-code">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Date: <strong className="text-slate-800">{item.date || '2026-08-25'}</strong></span>
+                      </span>
+                      <span className="text-slate-300">•</span>
+                      <span>Dep: <strong className="text-slate-800">{item.crs_dep_time || '1200'}</strong></span>
+                      <span className="text-slate-300">•</span>
+                      <span>Risk: <strong className={isDelayed ? 'text-red-600' : 'text-emerald-600'}>{probPct}%</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Duration & Admin Actions */}
+                <div className="flex flex-wrap items-center justify-between lg:justify-end gap-5 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-200">
+                  
+                  {/* Estimated Hold Time */}
+                  <div className="flex flex-col lg:items-end">
+                    <span className="text-[10px] font-mono-code text-slate-500 uppercase font-bold">Projected Hold</span>
+                    <span className={`text-xl font-bold font-mono-code ${isDelayed ? 'text-red-600' : 'text-slate-700'}`}>
+                      {isDelayed ? `+${item.estimated_delay_minutes} min` : '0 min'}
+                    </span>
+                  </div>
+
+                  {/* 1-Click Executive Directive Dispatcher Actions */}
+                  {isDelayed ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => handleQuickDirective(item, 'Priority Delay Advisory', 'critical')}
+                        className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold font-mono-code flex items-center gap-1.5 shadow-sm transition-all"
+                        title="Dispatch priority alert to all Dispatchers"
+                      >
+                        <Megaphone className="w-3.5 h-3.5" />
+                        <span>Alert Dispatchers</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleQuickDirective(item, 'Order Gate Reallocation', 'warning')}
+                        className="px-3.5 py-2 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold font-mono-code border border-red-300 flex items-center gap-1.5 transition-all"
+                        title="Mandate immediate terminal gate reassignment"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Reallocate Gate</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleQuickDirective(item, 'Mandate 30m Passenger Arrival Buffer', 'info')}
+                        className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold font-mono-code border border-slate-300 flex items-center gap-1.5 transition-all shadow-sm"
+                        title="Issue passenger departure buffer notice"
+                      >
+                        <Clock className="w-3 h-3 text-sky-600" />
+                        <span>30m Buffer</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono-code text-emerald-700 flex items-center gap-1 font-bold">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Operations Optimal</span>
+                      </span>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            );
+          })}
+
+          {filteredStream.length === 0 && (
+            <div className="p-12 text-center text-slate-500 text-xs font-mono-code">
+              No flight predictions matched the selected filter.
+            </div>
+          )}
+        </div>
+
+      </section>
+
+      {/* 4. User Access Matrix & Account Provisioning */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* User Role Management Table */}
@@ -354,7 +815,7 @@ const Admin = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredUsers.map((u) => {
-                  const isCurrent = u.username === user.username;
+                  const isCurrent = u.username === user?.username;
                   return (
                     <tr key={u._id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-4 px-3">

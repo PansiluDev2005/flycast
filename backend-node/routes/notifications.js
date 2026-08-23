@@ -16,16 +16,20 @@ router.get('/', protect, authorize('dispatcher', 'admin'), async (req, res) => {
 // Create a notification
 router.post('/', protect, authorize('dispatcher', 'admin'), async (req, res) => {
   try {
-    const { flightId, action } = req.body;
+    const { flightId, action, message: customMessage, priority } = req.body;
     
-    let message = '';
-    if (action === 'Notify Crew') message = `Crew for flight ${flightId} has been notified of the estimated delay.`;
-    if (action === 'Reallocate Gate') message = `Gate reallocation has been requested for flight ${flightId}.`;
+    let message = customMessage;
+    if (!message) {
+      if (action === 'Notify Crew') message = `Crew for flight ${flightId} has been notified of the estimated delay.`;
+      else if (action === 'Reallocate Gate') message = `Gate reallocation has been requested for flight ${flightId}.`;
+      else message = `Operational notice received for flight ${flightId}.`;
+    }
 
     const newNotif = new Notification({
       flightId,
-      action,
+      action: action || 'Admin Directive',
       message,
+      priority: priority || 'alert',
       createdBy: req.user.id || req.user._id
     });
     

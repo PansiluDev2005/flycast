@@ -203,39 +203,62 @@ const Navbar = () => {
                               No active operational alerts.
                             </div>
                           ) : (
-                            notifications.map(notif => (
-                              <div
-                                key={notif._id}
-                                className={`p-4 transition-colors ${
-                                  notif.read ? 'opacity-60 hover:opacity-100 bg-white' : 'bg-sky-50/60 hover:bg-sky-50'
-                                }`}
-                              >
-                                <div className="flex justify-between items-start gap-3">
-                                  <div className="flex items-start gap-2.5">
-                                    {notif.type === 'alert' ? (
-                                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                    ) : notif.type === 'system' ? (
-                                      <Sparkles className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
-                                    ) : (
-                                      <Clock className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                                    )}
-                                    <p className="text-xs text-slate-800 leading-snug font-medium">{notif.message}</p>
-                                  </div>
-                                  {!notif.read && (
-                                    <button
-                                      onClick={() => markAsRead(notif._id)}
-                                      className="text-sky-600 p-1 hover:bg-sky-100 rounded-md transition-colors shrink-0"
-                                      title="Mark as read"
-                                    >
-                                      <Check className="w-3.5 h-3.5" />
-                                    </button>
+                            notifications.map(notif => {
+                              const isAdminDirective = notif.senderRole === 'admin' || (notif.message && notif.message.includes('ADMIN'));
+                              const isCritical = notif.priority === 'critical' || notif.type === 'critical';
+
+                              return (
+                                <div
+                                  key={notif._id}
+                                  className={`p-4 transition-colors ${
+                                    notif.read ? 'opacity-60 hover:opacity-100 bg-white' : 
+                                    isAdminDirective ? 'bg-purple-50/70 border-l-4 border-purple-600' :
+                                    isCritical ? 'bg-red-50/70 border-l-4 border-red-500' :
+                                    'bg-sky-50/60 hover:bg-sky-50'
+                                  }`}
+                                >
+                                  {isAdminDirective && (
+                                    <div className="flex items-center gap-1.5 mb-1.5">
+                                      <span className="px-2 py-0.5 rounded-md bg-purple-200 text-purple-900 text-[9px] font-mono-code font-extrabold uppercase tracking-wider">
+                                        ⚡ ADMIN EXECUTIVE DIRECTIVE
+                                      </span>
+                                    </div>
                                   )}
+
+                                  <div className="flex justify-between items-start gap-3">
+                                    <div className="flex items-start gap-2.5">
+                                      {isAdminDirective ? (
+                                        <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+                                      ) : isCritical || notif.type === 'alert' ? (
+                                        <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                                      ) : notif.type === 'system' ? (
+                                        <Sparkles className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+                                      ) : (
+                                        <Clock className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                                      )}
+                                      <p className={`text-xs leading-snug ${isAdminDirective ? 'text-slate-900 font-bold' : 'text-slate-800 font-medium'}`}>
+                                        {notif.message}
+                                      </p>
+                                    </div>
+                                    {!notif.read && (
+                                      <button
+                                        onClick={() => markAsRead(notif._id)}
+                                        className="text-sky-600 p-1 hover:bg-sky-100 rounded-md transition-colors shrink-0"
+                                        title="Mark as read"
+                                      >
+                                        <Check className="w-3.5 h-3.5" />
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center justify-between text-[10px] font-mono-code text-slate-400 mt-2">
+                                    <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
+                                    {notif.flightId && (
+                                      <span className="text-slate-500 font-bold">FLIGHT: {notif.flightId}</span>
+                                    )}
+                                  </div>
                                 </div>
-                                <span className="text-[10px] font-mono-code text-slate-400 block mt-2">
-                                  {new Date(notif.createdAt).toLocaleTimeString()}
-                                </span>
-                              </div>
-                            ))
+                              );
+                            })
                           )}
                         </div>
                       </div>
