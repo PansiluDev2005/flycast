@@ -30,24 +30,36 @@ const Navbar = () => {
 
   const fetchNotifications = async () => {
     if (user && (user.role === 'dispatcher' || user.role === 'admin')) {
+      // 1. Read existing local storage notifications
+      let localNotifs = [];
+      try {
+        const saved = localStorage.getItem('flycast_realtime_notifications');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Purge stale mock notifications from previous builds
+          localNotifs = parsed.filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3');
+        }
+      } catch (e) {
+        localNotifs = [];
+      }
+
+      // 2. Fetch server notifications and merge
       try {
         const res = await axios.get('http://localhost:5000/api/notifications', {
           headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
         });
-        const notifs = Array.isArray(res.data) ? res.data : [];
-        setNotifications(notifs);
-        localStorage.setItem('flycast_realtime_notifications', JSON.stringify(notifs));
+        const serverNotifs = Array.isArray(res.data) ? res.data.filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3') : [];
+        
+        const map = new Map();
+        localNotifs.forEach(n => map.set(n._id || `${n.flightId}-${n.createdAt}`, n));
+        serverNotifs.forEach(n => map.set(n._id || `${n.flightId}-${n.createdAt}`, n));
+        
+        const merged = Array.from(map.values()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setNotifications(merged);
+        localStorage.setItem('flycast_realtime_notifications', JSON.stringify(merged));
       } catch (err) {
-        const saved = localStorage.getItem('flycast_realtime_notifications');
-        if (saved) {
-          try {
-            setNotifications(JSON.parse(saved));
-          } catch (e) {
-            setNotifications([]);
-          }
-        } else {
-          setNotifications([]);
-        }
+        setNotifications(localNotifs);
+        localStorage.setItem('flycast_realtime_notifications', JSON.stringify(localNotifs));
       }
     } else {
       setNotifications([]);
@@ -56,7 +68,7 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000);
+    const interval = setInterval(fetchNotifications, 5000);
     return () => clearInterval(interval);
   }, [user]);
 

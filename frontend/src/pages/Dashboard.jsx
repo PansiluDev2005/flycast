@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
@@ -17,7 +17,10 @@ import {
   RefreshCw, 
   Send, 
   Sparkles,
-  Search
+  Search,
+  ShieldCheck,
+  Megaphone,
+  Check
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -48,6 +51,48 @@ const Dashboard = () => {
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionSuccessMsg, setActionSuccessMsg] = useState('');
+  const [incomingDirectives, setIncomingDirectives] = useState([]);
+
+  const fetchDirectives = async () => {
+    let local = [];
+    try {
+      const saved = localStorage.getItem('flycast_realtime_notifications');
+      if (saved) {
+        local = JSON.parse(saved).filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3');
+      }
+    } catch (e) {}
+
+    try {
+      const res = await axios.get('http://localhost:5000/api/notifications', {
+        headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
+      });
+      const serverNotifs = Array.isArray(res.data) ? res.data.filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3') : [];
+      const map = new Map();
+      local.forEach(n => map.set(n._id || `${n.flightId}-${n.createdAt}`, n));
+      serverNotifs.forEach(n => map.set(n._id || `${n.flightId}-${n.createdAt}`, n));
+      const combined = Array.from(map.values()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setIncomingDirectives(combined);
+    } catch (err) {
+      setIncomingDirectives(local);
+    }
+  };
+
+  useEffect(() => {
+    fetchDirectives();
+    const interval = setInterval(fetchDirectives, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const markDirectiveHandled = async (id) => {
+    const updated = incomingDirectives.map(n => n._id === id ? { ...n, read: true } : n);
+    setIncomingDirectives(updated);
+    localStorage.setItem('flycast_realtime_notifications', JSON.stringify(updated));
+    try {
+      await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+        headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
+      });
+    } catch (e) {}
+  };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -218,6 +263,68 @@ const Dashboard = () => {
         <div className="p-4 rounded-2xl bg-sky-50 border border-sky-200 text-sky-900 text-sm font-mono-code flex items-center gap-3 animate-in fade-in slide-in-from-top-2 font-medium">
           <BellRing className="w-5 h-5 text-sky-600 shrink-0" />
           <span>{actionSuccessMsg}</span>
+        </div>
+      )}
+
+      {/* Incoming Executive Directives from Admin Console */}
+      {incomingDirectives.length > 0 && (
+        <div className="glass-panel p-6 sm:p-8 rounded-3xl border-purple-200 bg-white shadow-md flex flex-col gap-4 animate-in fade-in">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div className="flex items-center gap-2 text-xs font-mono-code text-purple-900 font-bold uppercase tracking-wider">
+              <Megaphone className="w-4 h-4 text-purple-600 animate-pulse" />
+              <span>Incoming Executive Directives from Admin Console</span>
+            </div>
+            <span className="text-[10px] font-mono-code px-2.5 py-0.5 rounded bg-purple-100 text-purple-800 font-bold">
+              {incomingDirectives.filter(d => !d.read).length} Unhandled
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {incomingDirectives.slice(0, 4).map(directive => (
+              <div 
+                key={directive._id}
+                className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  directive.read 
+                    ? 'opacity-60 bg-slate-50 border-slate-200' 
+                    : directive.priority === 'critical'
+                    ? 'bg-red-50/60 border-red-300'
+                    : 'bg-purple-50/70 border-purple-300'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 rounded bg-purple-200 text-purple-900 text-[10px] font-mono-code font-bold uppercase">
+                        {directive.action || 'ADMIN DIRECTIVE'}
+                      </span>
+                      {directive.flightId && (
+                        <span className="text-xs font-mono-code font-bold text-slate-900">
+                          FLIGHT: {directive.flightId}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold text-slate-900 leading-snug">
+                      {directive.message}
+                    </p>
+                    <span className="text-[10px] font-mono-code text-slate-400 block mt-1">
+                      Received {new Date(directive.createdAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
+
+                {!directive.read && (
+                  <button
+                    onClick={() => markDirectiveHandled(directive._id)}
+                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold font-mono-code flex items-center justify-center gap-1.5 shadow-sm shrink-0"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Acknowledge</span>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
