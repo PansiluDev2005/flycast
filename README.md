@@ -83,22 +83,22 @@ The following diagram illustrates the polyglot microservice layout, inter-servic
 
 ```mermaid
 graph TB
-    subgraph Client Tier ["Client Tier (Browser)"]
+    subgraph ClientTier ["Client Tier (Browser)"]
         UI["React 19 SPA (Vite + Tailwind v4)<br>Port: 5173"]
     end
 
-    subgraph Gateway Tier ["API Gateway Tier (Node.js)"]
+    subgraph GatewayTier ["API Gateway Tier (Node.js)"]
         NodeGateway["Node.js Express 5.2 Gateway<br>Port: 5000"]
         AuthMiddleware["JWT & RBAC Middleware"]
         RouteProxy["ML Proxy & File Streamer"]
         InMemoryStore["Resilient Notification Store"]
     end
 
-    subgraph Database Tier ["Persistence Tier (Cloud)"]
+    subgraph DatabaseTier ["Persistence Tier (Cloud)"]
         Mongo["MongoDB Atlas Cluster<br>(Users, Watchlists, Audit Logs)"]
     end
 
-    subgraph ML Tier ["Machine Learning Tier (Python)"]
+    subgraph MLTier ["Machine Learning Tier (Python)"]
         FlaskML["Python Flask 3.1 + Waitress<br>Port: 5001"]
         PandasEngine["Pandas Batch Processing Engine"]
         
@@ -117,8 +117,13 @@ graph TB
     RouteProxy -->|"Mongoose ODM"| Mongo
     RouteProxy -->|"Internal REST (POST /predict)"| FlaskML
     FlaskML --> PandasEngine
-    PandasEngine --> LE_C & LE_O & LE_D
-    LE_C & LE_O & LE_D --> RFC --> DTR
+    PandasEngine --> LE_C
+    PandasEngine --> LE_O
+    PandasEngine --> LE_D
+    LE_C --> RFC
+    LE_O --> RFC
+    LE_D --> RFC
+    RFC --> DTR
     NodeGateway --- InMemoryStore
 ```
 
@@ -135,27 +140,27 @@ graph LR
         A((System Admin))
     end
 
-    subgraph Passenger Use Cases
-        UC1[Evaluate Single Flight Delay]
-        UC2[View Smart Travel Departure Time]
-        UC3[Manage Personal Flight Watchlist]
-        UC4[Track Digital Boarding Pass Countdown]
+    subgraph Passenger_Use_Cases ["Passenger Use Cases"]
+        UC1["Evaluate Single Flight Delay"]
+        UC2["View Smart Travel Departure Time"]
+        UC3["Manage Personal Flight Watchlist"]
+        UC4["Track Digital Boarding Pass Countdown"]
     end
 
-    subgraph Dispatcher Use Cases
-        UC5[Upload Bulk Flight Schedule CSV]
-        UC6[Analyze Fleet Risk Distribution Charts]
-        UC7[Dispatch Flight Crew Advisory Alerts]
-        UC8[Request Pre-emptive Gate Reallocations]
-        UC9[Receive Executive Admin Directives]
+    subgraph Dispatcher_Use_Cases ["Dispatcher Use Cases"]
+        UC5["Upload Bulk Flight Schedule CSV"]
+        UC6["Analyze Fleet Risk Distribution Charts"]
+        UC7["Dispatch Flight Crew Advisory Alerts"]
+        UC8["Request Pre-emptive Gate Reallocations"]
+        UC9["Receive Executive Admin Directives"]
     end
 
-    subgraph Administrator Use Cases
-        UC10[Monitor Live Microservice Telemetry]
-        UC11[Review Global Flight Prediction Risk Stream]
-        UC12[Broadcast Priority Directives to Dispatchers]
-        UC13[Manage User RBAC Access Matrix]
-        UC14[Trigger Asynchronous ML Retraining]
+    subgraph Administrator_Use_Cases ["Administrator Use Cases"]
+        UC10["Monitor Live Microservice Telemetry"]
+        UC11["Review Global Flight Prediction Risk Stream"]
+        UC12["Broadcast Priority Directives to Dispatchers"]
+        UC13["Manage User RBAC Access Matrix"]
+        UC14["Trigger Asynchronous ML Retraining"]
     end
 
     P --> UC1
@@ -194,7 +199,7 @@ sequenceDiagram
     participant Model as Scikit-Learn Ensemble (.pkl)
     participant DB as MongoDB Atlas
 
-    User->>UI: Input Flight (e.g. UL503, CMB ➔ LHR, 1300, 5410mi)
+    User->>UI: Input Flight (UL503, CMB to LHR, 1300, 5410mi)
     UI->>Node: POST /api/ml/predict (Payload + JWT Token)
     Node->>Node: Verify JWT & Access Permissions
     Node->>Flask: Forward Payload (POST /predict)
@@ -202,15 +207,15 @@ sequenceDiagram
     Flask->>Model: Encode (Carrier, Origin, Dest) via LabelEncoders
     Model-->>Flask: Transformed Numerical Feature Array
     Flask->>Model: delay_classifier.predict_proba(features)
-    Model-->>Flask: Risk Probability (e.g., 0.38)
-    opt Risk Probability > 0.5
+    Model-->>Flask: Risk Probability (e.g. 0.38)
+    opt Risk Probability > 0.50
         Flask->>Model: delay_regressor.predict(features)
-        Model-->>Flask: Estimated Hold Minutes (e.g., +35 min)
+        Model-->>Flask: Estimated Hold Minutes (e.g. +35 min)
     end
     Flask-->>Node: JSON [delay_probability, estimated_minutes, status]
     Node-->>UI: 200 OK Response
     UI->>UI: Update Speedometer HUD & Feature Factor Bars
-    opt User clicks "Save to Watchlist"
+    opt User clicks Save to Watchlist
         UI->>Node: POST /api/watchlist (Flight Record)
         Node->>DB: Watchlist.findOneAndUpdate(user_id, $push)
         DB-->>Node: Document Updated
@@ -267,21 +272,21 @@ sequenceDiagram
     participant DispUI as React Dispatcher Console
     actor Dispatcher as Active Dispatcher
 
-    Admin->>AdminUI: Inspect Flagged Flight (e.g. UL225, Risk: 74%)
-    Admin->>AdminUI: Click "Alert Dispatchers" or "Reallocate Gate"
+    Admin->>AdminUI: Inspect Flagged Flight (UL225, Risk: 74%)
+    Admin->>AdminUI: Click Alert Dispatchers or Reallocate Gate
     AdminUI->>Node: POST /api/notifications (flightId, action, message, priority)
     Node->>DB: Notification.create(...) & inMemoryStore.unshift(...)
     DB-->>Node: Saved
     Node-->>AdminUI: 201 Created Toast Confirmation
 
-    Note over DispUI,Node: Polling / Real-Time Sync (Every 5s)
+    Note over DispUI,Node: Real-Time Sync (Every 5s)
     DispUI->>Node: GET /api/notifications (Bearer Token)
     Node->>DB: Query Recent Notifications (sort: -1)
     DB-->>Node: Notification Array
     Node-->>DispUI: 200 OK (Directives JSON)
-    DispUI->>DispUI: Render "⚡ ADMIN EXECUTIVE DIRECTIVE" in Navbar
-    DispUI->>DispUI: Display "Incoming Executive Directives" Banner
-    Dispatcher->>DispUI: Click "Acknowledge" (Mark Handled)
+    DispUI->>DispUI: Render ADMIN EXECUTIVE DIRECTIVE in Navbar
+    DispUI->>DispUI: Display Incoming Executive Directives Banner
+    Dispatcher->>DispUI: Click Acknowledge (Mark Handled)
     DispUI->>Node: PUT /api/notifications/:id/read
     Node->>DB: Update read = true
 ```
@@ -356,26 +361,31 @@ classDiagram
 
 ```mermaid
 flowchart TD
-    A[Raw Scheduled Flight Input] --> B{Feature Extraction}
-    B -->|Date Parsing| C[Month: 1-12 & DayOfWeek: 1-7]
-    B -->|Time Normalization| D[CRS_DEP_TIME: HHMM Military]
-    B -->|Distance Metric| E[DISTANCE: Statute Miles]
-    B -->|Categorical Codes| F[Carrier Code & Airport Codes]
+    A["Raw Scheduled Flight Input"] --> B{"Feature Extraction"}
+    B -->|"Date Parsing"| C["Month: 1-12 & DayOfWeek: 1-7"]
+    B -->|"Time Normalization"| D["CRS_DEP_TIME: HHMM Military"]
+    B -->|"Distance Metric"| E["DISTANCE: Statute Miles"]
+    B -->|"Categorical Codes"| F["Carrier Code & Airport Codes"]
 
-    F --> G[Knowledge Alias Resolver]
-    G -->|e.g. UL ➔ Delta Full-Service Profile| H[Carrier LabelEncoder]
-    G -->|e.g. CMB ➔ JFK Primary Hub Profile| I[Origin & Dest LabelEncoders]
+    F --> G["Knowledge Alias Resolver"]
+    G -->|"UL to Full-Service Profile"| H["Carrier LabelEncoder"]
+    G -->|"CMB to Primary Hub Profile"| I["Origin & Dest LabelEncoders"]
 
-    C & D & E & H & I --> J[Combined Feature Vector (1x7)]
+    C --> J["Combined Feature Vector (1x7)"]
+    D --> J
+    E --> J
+    H --> J
+    I --> J
 
-    J --> K[Random Forest Classifier (100 Estimators)]
-    K --> L{Delay Probability > 0.50?}
+    J --> K["Random Forest Classifier (100 Estimators)"]
+    K --> L{"Delay Probability > 0.50?"}
 
-    L -- Yes (Delay Projected) --> M[Decision Tree Regressor]
-    M --> N[Estimated Hold Time: +X Minutes]
-    L -- No (On Time Expected) --> O[Hold Duration: 0 Minutes]
+    L -->|"Yes (Delay Projected)"| M["Decision Tree Regressor"]
+    M --> N["Estimated Hold Time: +X Minutes"]
+    L -->|"No (On Time Expected)"| O["Hold Duration: 0 Minutes"]
 
-    N & O --> P[Formatted Flycast JSON Response]
+    N --> P["Formatted Flycast JSON Response"]
+    O --> P
 ```
 
 ### Model Performance Metrics
