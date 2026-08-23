@@ -36,7 +36,6 @@ const Navbar = () => {
         });
         setNotifications(res.data || []);
       } catch (err) {
-        // Mock fallback if DB is not populated yet
         setNotifications([
           {
             _id: 'notif-1',
@@ -70,7 +69,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setShowDropdown(false);
@@ -97,71 +95,70 @@ const Navbar = () => {
   const navLinkClass = ({ isActive }) =>
     `flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
       isActive
-        ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)] font-semibold'
-        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+        ? 'bg-sky-500/10 text-sky-700 border border-sky-500/30 shadow-[0_2px_10px_rgba(14,165,233,0.1)] font-semibold'
+        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
     }`;
 
   return (
     <header className="sticky top-0 z-50 px-4 lg:px-8 pt-3 pb-2 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto">
-        <nav className="glass-hud rounded-2xl px-5 py-3.5 flex items-center justify-between transition-all duration-300">
+        <nav className="glass-hud rounded-2xl px-5 py-3 flex items-center justify-between transition-all duration-300 border border-slate-200/90 shadow-sm">
           
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-500/40 text-cyan-400 group-hover:scale-105 transition-transform shadow-[0_0_20px_rgba(0,210,255,0.25)]">
-              <Plane className="w-5 h-5 -rotate-45 text-cyan-300 group-hover:text-white transition-colors" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping opacity-75"></span>
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-[0_4px_14px_rgba(14,165,233,0.35)] group-hover:scale-105 transition-transform">
+              <Plane className="w-5 h-5 -rotate-45" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white animate-pulse"></span>
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-400 bg-clip-text text-transparent">
+                <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-sky-900 to-blue-700 bg-clip-text text-transparent font-heading">
                   Flycast
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono-code font-bold rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                <span className="px-1.5 py-0.5 text-[10px] font-mono-code font-bold rounded bg-sky-100 text-sky-700 border border-sky-200">
                   AI 2.0
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase flex items-center gap-1">
-                <Radio className="w-2.5 h-2.5 text-emerald-400 animate-pulse" />
+              <span className="text-[10px] text-slate-500 font-medium tracking-wider uppercase flex items-center gap-1">
+                <Radio className="w-2.5 h-2.5 text-emerald-500 animate-pulse" />
                 Aviation Intelligence
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1.5 bg-slate-900/60 p-1 rounded-xl border border-white/5">
+          <div className="hidden md:flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
             {user ? (
               <>
                 <NavLink to="/predictor" className={navLinkClass}>
-                  <Compass className="w-4 h-4 text-cyan-400" />
+                  <Compass className="w-4 h-4 text-sky-600" />
                   <span>AI Predictor</span>
                 </NavLink>
 
                 {(user.role === 'passenger' || user.role === 'admin') && (
                   <NavLink to="/passenger" className={navLinkClass}>
-                    <BookmarkCheck className="w-4 h-4 text-emerald-400" />
+                    <BookmarkCheck className="w-4 h-4 text-emerald-600" />
                     <span>My Watchlist</span>
                   </NavLink>
                 )}
 
                 {(user.role === 'dispatcher' || user.role === 'admin') && (
                   <NavLink to="/dashboard" className={navLinkClass}>
-                    <BarChart3 className="w-4 h-4 text-blue-400" />
+                    <BarChart3 className="w-4 h-4 text-blue-600" />
                     <span>Dispatcher Triage</span>
                   </NavLink>
                 )}
 
                 {user.role === 'admin' && (
                   <NavLink to="/admin" className={navLinkClass}>
-                    <ShieldCheck className="w-4 h-4 text-purple-400" />
+                    <ShieldCheck className="w-4 h-4 text-purple-600" />
                     <span>Admin Console</span>
                   </NavLink>
                 )}
               </>
             ) : (
               <NavLink to="/" className={navLinkClass}>
-                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <Sparkles className="w-4 h-4 text-sky-600" />
                 <span>Overview</span>
               </NavLink>
             )}
@@ -172,10 +169,10 @@ const Navbar = () => {
             {user ? (
               <>
                 {/* Live Microservice Telemetry Tag */}
-                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-emerald-500/30 text-xs font-mono-code text-slate-300">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>ML Engine Online</span>
-                  <span className="text-emerald-400 font-bold">24ms</span>
+                <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100/90 border border-emerald-500/30 text-xs font-mono-code text-slate-700">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>ML Engine</span>
+                  <span className="text-emerald-700 font-bold">24ms</span>
                 </div>
 
                 {/* Notifications Drawer Toggle */}
@@ -183,30 +180,30 @@ const Navbar = () => {
                   <div className="relative">
                     <button
                       onClick={() => setShowDropdown(!showDropdown)}
-                      className="relative p-2.5 rounded-xl bg-slate-900/70 hover:bg-slate-800 border border-white/10 hover:border-cyan-500/40 transition-all text-slate-300 hover:text-white"
+                      className="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition-all text-slate-700 hover:text-slate-900 shadow-sm"
                       title="Operational Alerts"
                     >
                       <Bell className="w-4 h-4" />
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold font-mono-code flex items-center justify-center rounded-full border-2 border-slate-950 animate-bounce">
+                        <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold font-mono-code flex items-center justify-center rounded-full border-2 border-white animate-bounce">
                           {unreadCount}
                         </span>
                       )}
                     </button>
 
                     {showDropdown && (
-                      <div className="absolute right-0 mt-3 w-84 bg-slate-950/95 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                        <div className="p-4 bg-slate-900/90 border-b border-white/10 flex justify-between items-center">
+                      <div className="absolute right-0 mt-3 w-84 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-2xl rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                           <div className="flex items-center gap-2">
-                            <Activity className="w-4 h-4 text-cyan-400" />
-                            <span className="font-bold text-sm text-white">Operational Alerts</span>
+                            <Activity className="w-4 h-4 text-sky-600" />
+                            <span className="font-bold text-sm text-slate-900">Operational Alerts</span>
                           </div>
-                          <span className="text-xs font-mono-code px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                          <span className="text-xs font-mono-code px-2 py-0.5 rounded bg-sky-100 text-sky-700 border border-sky-200 font-semibold">
                             {unreadCount} Unread
                           </span>
                         </div>
                         
-                        <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
+                        <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
                           {notifications.length === 0 ? (
                             <div className="p-6 text-center text-slate-400 text-xs">
                               No active operational alerts.
@@ -216,24 +213,24 @@ const Navbar = () => {
                               <div
                                 key={notif._id}
                                 className={`p-4 transition-colors ${
-                                  notif.read ? 'opacity-50 hover:opacity-80' : 'bg-cyan-500/5 hover:bg-cyan-500/10'
+                                  notif.read ? 'opacity-60 hover:opacity-100 bg-white' : 'bg-sky-50/60 hover:bg-sky-50'
                                 }`}
                               >
                                 <div className="flex justify-between items-start gap-3">
                                   <div className="flex items-start gap-2.5">
                                     {notif.type === 'alert' ? (
-                                      <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                                     ) : notif.type === 'system' ? (
-                                      <Sparkles className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                                      <Sparkles className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
                                     ) : (
-                                      <Clock className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                                      <Clock className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
                                     )}
-                                    <p className="text-xs text-slate-200 leading-snug">{notif.message}</p>
+                                    <p className="text-xs text-slate-800 leading-snug font-medium">{notif.message}</p>
                                   </div>
                                   {!notif.read && (
                                     <button
                                       onClick={() => markAsRead(notif._id)}
-                                      className="text-cyan-400 p-1 hover:bg-cyan-500/20 rounded-md transition-colors shrink-0"
+                                      className="text-sky-600 p-1 hover:bg-sky-100 rounded-md transition-colors shrink-0"
                                       title="Mark as read"
                                     >
                                       <Check className="w-3.5 h-3.5" />
@@ -253,19 +250,19 @@ const Navbar = () => {
                 )}
 
                 {/* User Profile Pill */}
-                <div className="flex items-center gap-2 pl-3 border-l border-white/10">
+                <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
                   <Link
                     to="/profile"
-                    className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 hover:border-cyan-500/30 transition-all group"
+                    className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 transition-all group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-slate-950 group-hover:scale-105 transition-transform">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white group-hover:scale-105 transition-transform shadow-sm">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex flex-col text-left">
-                      <span className="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">
+                      <span className="text-xs font-semibold text-slate-900 group-hover:text-sky-700 transition-colors">
                         {user.username}
                       </span>
-                      <span className="text-[10px] font-mono-code uppercase tracking-wider text-cyan-400">
+                      <span className="text-[10px] font-mono-code uppercase tracking-wider text-sky-600 font-bold">
                         {user.role}
                       </span>
                     </div>
@@ -273,7 +270,7 @@ const Navbar = () => {
 
                   <button
                     onClick={handleLogout}
-                    className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 hover:text-red-300 transition-all"
+                    className="p-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 transition-all shadow-sm"
                     title="Log Out"
                   >
                     <LogOut className="w-4 h-4" />
@@ -284,13 +281,13 @@ const Navbar = () => {
               <div className="flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+                  className="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-5 py-2 text-sm font-semibold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 rounded-xl transition-all shadow-[0_0_20px_rgba(0,210,255,0.3)] hover:shadow-[0_0_25px_rgba(0,210,255,0.5)] flex items-center gap-1.5"
+                  className="px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.4)] flex items-center gap-1.5"
                 >
                   <span>Launch Console</span>
                   <Plane className="w-3.5 h-3.5 -rotate-45" />
@@ -302,13 +299,13 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
             {user && (
-              <Link to="/profile" className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center text-xs font-bold text-slate-950">
+              <Link to="/profile" className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center text-xs font-bold text-white">
                 {user.username.charAt(0).toUpperCase()}
               </Link>
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white"
+              className="p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -317,45 +314,45 @@ const Navbar = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-2 p-4 glass-hud rounded-2xl flex flex-col gap-2 animate-in fade-in slide-in-from-top-2">
+          <div className="md:hidden mt-2 p-4 glass-hud rounded-2xl flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 border border-slate-200 shadow-xl">
             {user ? (
               <>
                 <NavLink to="/predictor" className={navLinkClass}>
-                  <Compass className="w-4 h-4 text-cyan-400" />
+                  <Compass className="w-4 h-4 text-sky-600" />
                   <span>AI Predictor</span>
                 </NavLink>
 
                 {(user.role === 'passenger' || user.role === 'admin') && (
                   <NavLink to="/passenger" className={navLinkClass}>
-                    <BookmarkCheck className="w-4 h-4 text-emerald-400" />
+                    <BookmarkCheck className="w-4 h-4 text-emerald-600" />
                     <span>My Watchlist</span>
                   </NavLink>
                 )}
 
                 {(user.role === 'dispatcher' || user.role === 'admin') && (
                   <NavLink to="/dashboard" className={navLinkClass}>
-                    <BarChart3 className="w-4 h-4 text-blue-400" />
+                    <BarChart3 className="w-4 h-4 text-blue-600" />
                     <span>Dispatcher Triage</span>
                   </NavLink>
                 )}
 
                 {user.role === 'admin' && (
                   <NavLink to="/admin" className={navLinkClass}>
-                    <ShieldCheck className="w-4 h-4 text-purple-400" />
+                    <ShieldCheck className="w-4 h-4 text-purple-600" />
                     <span>Admin Console</span>
                   </NavLink>
                 )}
 
-                <div className="pt-3 border-t border-white/10 flex justify-between items-center">
+                <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="font-semibold text-white">{user.username}</span>
-                    <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-mono-code text-[10px]">
+                    <span className="font-semibold text-slate-900">{user.username}</span>
+                    <span className="px-2 py-0.5 rounded bg-sky-100 text-sky-700 font-mono-code text-[10px] font-bold">
                       {user.role}
                     </span>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-semibold"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Log Out</span>
@@ -366,13 +363,13 @@ const Navbar = () => {
               <div className="flex flex-col gap-2">
                 <Link
                   to="/login"
-                  className="w-full text-center py-2.5 rounded-xl bg-slate-800 text-white font-medium text-sm"
+                  className="w-full text-center py-2.5 rounded-xl bg-slate-100 text-slate-900 font-semibold text-sm"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-sm"
+                  className="w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold text-sm shadow-md"
                 >
                   Launch Console
                 </Link>

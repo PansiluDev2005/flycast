@@ -12,11 +12,8 @@ import {
   Plus, 
   Calendar, 
   ShieldCheck, 
-  MapPin, 
   Car, 
   Luggage, 
-  QrCode,
-  Sparkles,
   SunMedium
 } from 'lucide-react';
 
@@ -37,7 +34,6 @@ const PassengerDashboard = () => {
       if (res.data.flights && res.data.flights.length > 0) {
         setWatchlist(res.data.flights);
       } else {
-        // High fidelity mock fallback
         setWatchlist([
           {
             _id: 'mock1',
@@ -62,7 +58,6 @@ const PassengerDashboard = () => {
         ]);
       }
     } catch (err) {
-      console.warn('Watchlist fetch fallback:', err);
       setWatchlist([
         {
           _id: 'mock1',
@@ -104,8 +99,8 @@ const PassengerDashboard = () => {
   const calculateOptimalDeparture = (scheduledDate, delayMins = 0) => {
     const baseDate = new Date(scheduledDate);
     baseDate.setMinutes(baseDate.getMinutes() + (delayMins || 0));
-    baseDate.setHours(baseDate.getHours() - 2); // 2h airport terminal buffer
-    baseDate.setMinutes(baseDate.getMinutes() - 45); // 45m average commute
+    baseDate.setHours(baseDate.getHours() - 2);
+    baseDate.setMinutes(baseDate.getMinutes() - 45);
     return baseDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
@@ -119,31 +114,31 @@ const PassengerDashboard = () => {
   if (loading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-4">
-        <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-sm font-mono-code text-cyan-400 animate-pulse">Syncing Personal Watchlist...</span>
+        <div className="w-10 h-10 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-sm font-mono-code text-sky-700 animate-pulse font-bold">Syncing Personal Watchlist...</span>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-10">
+    <div className="max-w-6xl mx-auto flex flex-col gap-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono-code mb-2">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-mono-code mb-2 font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>Passenger Travel Companion</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Personal Flight Watchlist</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-heading">Personal Flight Watchlist</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Real-time itinerary tracking, AI delay forecasts, and optimized airport departure countdowns.
           </p>
         </div>
 
         <Link
           to="/predictor"
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-xs font-mono-code flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(0,210,255,0.3)]"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs font-mono-code flex items-center justify-center gap-2 transition-all shadow-md"
         >
           <Plus className="w-4 h-4" />
           <span>Track New Flight</span>
@@ -153,17 +148,17 @@ const PassengerDashboard = () => {
       {/* Watchlist Cards Container */}
       <div className="flex flex-col gap-8">
         {watchlist.length === 0 ? (
-          <div className="glass-panel p-16 text-center rounded-3xl flex flex-col items-center border-white/5">
-            <div className="w-20 h-20 rounded-3xl bg-slate-900 border border-white/10 flex items-center justify-center text-slate-600 mb-6">
+          <div className="glass-panel p-16 text-center rounded-3xl flex flex-col items-center border-slate-200 bg-white shadow-md">
+            <div className="w-20 h-20 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 mb-6">
               <Plane className="w-10 h-10 -rotate-45" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">Your Watchlist is Empty</h3>
-            <p className="text-slate-400 text-sm max-w-md mb-8 leading-relaxed">
+            <h3 className="text-2xl font-bold text-slate-900 mb-2 font-heading">Your Watchlist is Empty</h3>
+            <p className="text-slate-600 text-sm max-w-md mb-8 leading-relaxed">
               Use our AI Flight Delay Predictor to evaluate any upcoming flight and save it to your personalized travel dashboard.
             </p>
             <Link
               to="/predictor"
-              className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-all shadow-[0_0_20px_rgba(0,210,255,0.3)]"
+              className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm transition-all shadow-md"
             >
               Search & Predict a Flight ➔
             </Link>
@@ -177,10 +172,10 @@ const PassengerDashboard = () => {
             return (
               <div 
                 key={flight._id || flight.flight_id} 
-                className="glass-hud rounded-3xl overflow-hidden border border-white/10 transition-all hover:border-cyan-500/30 shadow-2xl relative"
+                className="bg-white rounded-3xl overflow-hidden border border-slate-200 transition-all hover:border-sky-300 shadow-md relative"
               >
                 {/* Decorative Top Accent Bar */}
-                <div className={`h-2 w-full ${isDelayed ? 'bg-gradient-to-r from-red-500 to-amber-500' : 'bg-gradient-to-r from-cyan-400 to-emerald-400'}`}></div>
+                <div className={`h-2 w-full ${isDelayed ? 'bg-gradient-to-r from-red-500 to-amber-500' : 'bg-gradient-to-r from-sky-400 to-emerald-400'}`}></div>
 
                 <div className="p-6 sm:p-8 flex flex-col lg:flex-row gap-8 justify-between">
                   
@@ -190,73 +185,73 @@ const PassengerDashboard = () => {
                     {/* Airline & Status Bar */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 font-mono-code font-bold text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center font-mono-code font-bold text-sm shadow-sm">
                           {flight.carrier || 'FL'}
                         </div>
                         <div>
-                          <h3 className="text-2xl font-extrabold font-mono-code text-white">{flight.flight_id}</h3>
-                          <span className="text-xs text-slate-400 font-mono-code">Carrier: {flight.carrier || 'Commercial'}</span>
+                          <h3 className="text-2xl font-extrabold font-mono-code text-slate-900">{flight.flight_id}</h3>
+                          <span className="text-xs text-slate-500 font-mono-code">Carrier: {flight.carrier || 'Commercial'}</span>
                         </div>
                       </div>
 
                       <div className={`px-3 py-1 rounded-full text-xs font-mono-code font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-                        isDelayed ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        isDelayed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                       }`}>
-                        {isDelayed ? <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                        {isDelayed ? <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
                         <span>{isDelayed ? `+${flight.estimated_minutes}m Delay Projected` : 'On-Time Expected'}</span>
                       </div>
                     </div>
 
                     {/* Route Cities Display */}
-                    <div className="flex items-center justify-between py-4 px-6 bg-slate-900/80 rounded-2xl border border-white/5">
+                    <div className="flex items-center justify-between py-4 px-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
                       <div className="flex flex-col">
-                        <span className="text-3xl font-extrabold font-mono-code text-white">{flight.origin || 'JFK'}</span>
-                        <span className="text-xs text-slate-400 font-mono-code">Origin Airport</span>
+                        <span className="text-3xl font-extrabold font-mono-code text-slate-900">{flight.origin || 'JFK'}</span>
+                        <span className="text-xs text-slate-500 font-mono-code font-bold">Origin Airport</span>
                       </div>
 
                       <div className="flex flex-col items-center gap-1 px-4">
-                        <span className="text-[10px] font-mono-code text-cyan-400 font-bold uppercase tracking-wider">
+                        <span className="text-[10px] font-mono-code text-sky-700 font-bold uppercase tracking-wider">
                           {(flight.delay_probability * 100).toFixed(0)}% Delay Risk
                         </span>
-                        <div className="w-24 sm:w-36 h-0.5 bg-slate-700 relative flex items-center justify-center">
-                          <Plane className="w-4 h-4 text-cyan-400 absolute -rotate-45" />
+                        <div className="w-24 sm:w-36 h-0.5 bg-slate-300 relative flex items-center justify-center">
+                          <Plane className="w-4 h-4 text-sky-600 absolute -rotate-45" />
                         </div>
-                        <span className="text-[10px] font-mono-code text-slate-400">
+                        <span className="text-[10px] font-mono-code text-slate-500 font-medium">
                           Departs in {calculateHoursUntil(flight.scheduled_departure)}
                         </span>
                       </div>
 
                       <div className="flex flex-col items-end">
-                        <span className="text-3xl font-extrabold font-mono-code text-white">{flight.destination || 'LAX'}</span>
-                        <span className="text-xs text-slate-400 font-mono-code">Destination</span>
+                        <span className="text-3xl font-extrabold font-mono-code text-slate-900">{flight.destination || 'LAX'}</span>
+                        <span className="text-xs text-slate-500 font-mono-code font-bold">Destination</span>
                       </div>
                     </div>
 
                     {/* Weather & Terminal Tips Bar */}
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono-code text-slate-400 pt-1">
-                      <span className="flex items-center gap-1 text-slate-300">
-                        <SunMedium className="w-4 h-4 text-amber-400" />
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-mono-code text-slate-600 pt-1">
+                      <span className="flex items-center gap-1 text-slate-700 font-medium">
+                        <SunMedium className="w-4 h-4 text-amber-500" />
                         <span>Origin Weather: Clear 72°F</span>
                       </span>
-                      <span className="text-slate-600">•</span>
-                      <span>Scheduled Wheels Up: <strong className="text-white">{scheduledTimeStr}</strong></span>
+                      <span className="text-slate-400">•</span>
+                      <span>Scheduled Wheels Up: <strong className="text-slate-900">{scheduledTimeStr}</strong></span>
                     </div>
 
                   </div>
 
                   {/* Right: Smart Airport Journey Planner Timeline */}
-                  <div className="lg:w-96 p-6 rounded-2xl bg-slate-950/90 border border-cyan-500/20 flex flex-col justify-between gap-6">
+                  <div className="lg:w-96 p-6 rounded-2xl bg-sky-50/70 border border-sky-200 flex flex-col justify-between gap-6 shadow-sm">
                     
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-mono-code text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <Navigation className="w-3.5 h-3.5" />
+                        <span className="text-xs font-mono-code text-sky-800 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                          <Navigation className="w-3.5 h-3.5 text-sky-600" />
                           <span>Smart Journey Itinerary</span>
                         </span>
                         
                         <button
                           onClick={() => removeFromWatchlist(flight.flight_id)}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs transition-colors"
+                          className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 text-xs transition-colors"
                           title="Remove flight from watchlist"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -264,40 +259,40 @@ const PassengerDashboard = () => {
                       </div>
 
                       {/* Timeline Steps */}
-                      <div className="flex flex-col gap-4 relative pl-6 border-l border-cyan-500/30 my-2">
+                      <div className="flex flex-col gap-4 relative pl-6 border-l border-sky-300 my-2">
                         
                         {/* Step 1: Leave Home */}
                         <div className="relative">
-                          <span className="w-3 h-3 rounded-full bg-cyan-400 absolute -left-[31px] top-1 shadow-[0_0_10px_rgba(0,210,255,0.8)]"></span>
+                          <span className="w-3 h-3 rounded-full bg-sky-500 absolute -left-[31px] top-1 shadow-sm"></span>
                           <div className="flex items-baseline justify-between">
-                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                              <Car className="w-3.5 h-3.5 text-cyan-400" /> Leave Home
+                            <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                              <Car className="w-3.5 h-3.5 text-sky-600" /> Leave Home
                             </span>
-                            <span className="text-xs font-mono-code font-bold text-cyan-300">{leaveTimeStr}</span>
+                            <span className="text-xs font-mono-code font-bold text-sky-800">{leaveTimeStr}</span>
                           </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5">Optimized for 45m transit buffer.</p>
+                          <p className="text-[11px] text-slate-600 mt-0.5 font-medium">Optimized for 45m transit buffer.</p>
                         </div>
 
                         {/* Step 2: Airport Arrival */}
                         <div className="relative">
-                          <span className="w-2.5 h-2.5 rounded-full bg-slate-600 absolute -left-[30px] top-1"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-slate-400 absolute -left-[30px] top-1"></span>
                           <div className="flex items-baseline justify-between">
-                            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                              <Luggage className="w-3.5 h-3.5 text-slate-400" /> Terminal Arrival
+                            <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                              <Luggage className="w-3.5 h-3.5 text-slate-500" /> Terminal Arrival
                             </span>
-                            <span className="text-xs font-mono-code text-slate-400">2h Prior</span>
+                            <span className="text-xs font-mono-code text-slate-600">2h Prior</span>
                           </div>
                           <p className="text-[11px] text-slate-500 mt-0.5">Bag drop & security line window.</p>
                         </div>
 
                         {/* Step 3: Boarding Gate */}
                         <div className="relative">
-                          <span className="w-2.5 h-2.5 rounded-full bg-slate-600 absolute -left-[30px] top-1"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-slate-400 absolute -left-[30px] top-1"></span>
                           <div className="flex items-baseline justify-between">
-                            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                              <Plane className="w-3.5 h-3.5 text-slate-400" /> Boarding Gate
+                            <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                              <Plane className="w-3.5 h-3.5 text-slate-500" /> Boarding Gate
                             </span>
-                            <span className="text-xs font-mono-code text-slate-400">40m Prior</span>
+                            <span className="text-xs font-mono-code text-slate-600">40m Prior</span>
                           </div>
                         </div>
 
@@ -305,13 +300,13 @@ const PassengerDashboard = () => {
                     </div>
 
                     {/* Bottom Alert Chip */}
-                    <div className="p-3 rounded-xl bg-slate-900 border border-white/5 text-[11px] text-slate-400 leading-snug">
+                    <div className="p-3 rounded-xl bg-white border border-sky-200 text-[11px] text-slate-700 leading-snug shadow-sm">
                       {isDelayed ? (
-                        <span className="text-amber-300 font-medium">
+                        <span className="text-amber-800 font-bold">
                           ⚠️ Proactive Adjustment: Your flight has a +{flight.estimated_minutes}m projected delay. Take advantage of extra home buffer time.
                         </span>
                       ) : (
-                        <span className="text-emerald-300 font-medium">
+                        <span className="text-emerald-800 font-bold">
                           ✓ Operations Normal: Flight is on-time. Stick to standard 2-hour departure timeline.
                         </span>
                       )}

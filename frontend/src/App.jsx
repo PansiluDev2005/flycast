@@ -16,19 +16,19 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen flex flex-col bg-[#070b14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
+        <div className="min-h-screen flex flex-col bg-[#f0f4f9] text-slate-800 font-sans selection:bg-sky-500/20 selection:text-sky-900 relative overflow-x-hidden">
           
-          {/* Ambient Cosmic Background Lighting */}
-          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-cyan-500/8 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-glow"></div>
-          <div className="fixed top-1/3 right-10 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[160px] pointer-events-none -z-10"></div>
-          <div className="fixed bottom-10 left-1/3 w-[550px] h-[550px] bg-indigo-600/6 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+          {/* Luminous Atmospheric Ambient Glows */}
+          <div className="fixed top-0 left-1/4 w-[700px] h-[700px] bg-sky-200/40 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+          <div className="fixed top-1/3 right-10 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[160px] pointer-events-none -z-10"></div>
+          <div className="fixed bottom-10 left-1/3 w-[650px] h-[650px] bg-indigo-100/40 rounded-full blur-[150px] pointer-events-none -z-10"></div>
           
-          {/* Subtle Radar Grid Background */}
-          <div className="fixed inset-0 bg-radar-grid pointer-events-none opacity-40 -z-10"></div>
+          {/* Crisp Aviation Grid Overlay */}
+          <div className="fixed inset-0 bg-sky-grid pointer-events-none opacity-60 -z-10"></div>
 
           <Navbar />
           
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
