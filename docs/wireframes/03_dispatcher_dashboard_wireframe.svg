@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 890" width="100%" height="100%">
+  <defs>
+    <pattern id="grid3" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e2e8f0" stroke-width="0.75" opacity="0.6"/>
+    </pattern>
+    <filter id="cardShadow3" x="-5%" y="-5%" width="110%" height="115%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+    <linearGradient id="skyGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="890" fill="#f8fafc"/>
+  <rect width="1200" height="890" fill="url(#grid3)"/>
+
+  <!-- Top System Header Bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#0f172a"/>
+  <g transform="translate(30, 16)">
+    <rect x="0" y="4" width="20" height="20" rx="4" fill="#0284c7"/>
+    <path d="M 4 14 L 10 8 L 16 12 L 14 16 L 4 14 Z" fill="#ffffff"/>
+    <text x="30" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="800" fill="#ffffff" letter-spacing="1">FLYCAST</text>
+    <text x="105" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">| Aviation Intelligence Platform</text>
+  </g>
+
+  <!-- Navigation Links -->
+  <g transform="translate(420, 22)">
+    <text x="0" y="14" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">Home</text>
+    <text x="70" y="14" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">Predictor</text>
+    <text x="160" y="14" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">Watchlist</text>
+    <rect x="245" y="-4" width="120" height="28" rx="6" fill="#1e293b"/>
+    <text x="257" y="14" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#38bdf8">Operations Hub</text>
+    <text x="385" y="14" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">Admin</text>
+  </g>
+
+  <!-- User Profile Badge -->
+  <g transform="translate(980, 15)">
+    <rect x="0" y="0" width="190" height="30" rx="15" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="15" cy="15" r="8" fill="#f59e0b"/>
+    <text x="32" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9">dispatcher (Operations)</text>
+  </g>
+
+  <!-- Page Header -->
+  <g transform="translate(40, 75)">
+    <rect x="0" y="0" width="310" height="24" rx="12" fill="#e0f2fe" stroke="#bae6fd" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#0284c7"/>
+    <text x="24" y="16" font-family="monospace" font-size="11" font-weight="700" fill="#0369a1">WF-03 • OPERATIONAL TRIAGE &amp; BATCH ML</text>
+    
+    <text x="0" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#0f172a">Dispatcher Operations Command &amp; Bulk Triage</text>
+    <text x="0" y="74" font-family="system-ui, sans-serif" font-size="13" font-weight="400" fill="#64748b">High-throughput CSV flight schedule ingestion, fleet risk distribution, and pre-emptive gate reallocation</text>
+  </g>
+
+  <!-- Component 3.1: Live Executive Directives Ribbon -->
+  <g transform="translate(40, 160)" filter="url(#cardShadow3)">
+    <rect x="0" y="0" width="1120" height="48" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.2"/>
+    <circle cx="24" cy="24" r="6" fill="#ef4444"/>
+    <text x="40" y="29" font-family="monospace" font-size="12" font-weight="800" fill="#991b1b">🔴 ADMIN EXECUTIVE DIRECTIVE:</text>
+    <text x="250" y="28" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#7f1d1d">Flight UL225 (CMB➔DXB) flagged with 74% delay risk (+35m hold). Action: Pre-emptive Gate Reallocation.</text>
+    
+    <!-- Action Button inside Ribbon -->
+    <rect x="1000" y="10" width="105" height="28" rx="6" fill="#ef4444"/>
+    <text x="1015" y="28" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff">✔ Acknowledge</text>
+  </g>
+
+  <!-- ================= TOP ROW: UPLOAD DROPZONE & CHARTS ================= -->
+  <g transform="translate(40, 220)">
+    
+    <!-- Component 3.2: CSV Schedule Ingestion Dropzone (545px) -->
+    <g filter="url(#cardShadow3)">
+      <rect x="0" y="0" width="545" height="235" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="0" y="0" width="545" height="36" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="16" y="23" font-family="monospace" font-size="11" font-weight="700" fill="#475569">COMPONENT 3.2: BULK CSV SCHEDULE INGESTION</text>
+
+      <!-- Dropzone Dashed Container -->
+      <g transform="translate(25, 50)">
+        <rect x="0" y="0" width="495" height="110" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <circle cx="247" cy="35" r="16" fill="#e0f2fe"/>
+        <text x="241" y="40" font-family="system-ui" font-size="16" font-weight="700" fill="#0284c7">☁</text>
+        <text x="247" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Drag &amp; drop flight_schedule.csv here</text>
+        <text x="247" y="88" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#64748b">Supports columns: FLIGHT_ID, DATE, CARRIER, ORIGIN, DEST, CRS_DEP_TIME, DISTANCE</text>
+      </g>
+
+      <!-- Action Row: Sample CSV + Run AI Batch Button -->
+      <g transform="translate(25, 175)">
+        <rect x="0" y="0" width="180" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="18" y="26" font-family="monospace" font-size="11" font-weight="700" fill="#334155">⚡ Load 8-Flight Preset</text>
+
+        <rect x="195" y="0" width="300" height="42" rx="6" fill="url(#skyGrad3)"/>
+        <text x="235" y="26" font-family="system-ui, sans-serif" font-size="13" font-weight="800" fill="#ffffff">RUN BATCH ML CLASSIFICATION</text>
+      </g>
+    </g>
+
+    <!-- Component 3.3: Fleet Risk Analytics Bar Chart (555px) -->
+    <g transform="translate(565, 0)" filter="url(#cardShadow3)">
+      <rect x="0" y="0" width="555" height="235" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="0" y="0" width="555" height="36" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="16" y="23" font-family="monospace" font-size="11" font-weight="700" fill="#475569">COMPONENT 3.3: FLEET RISK DISTRIBUTION (RECHARTS)</text>
+      <text x="410" y="23" font-family="monospace" font-size="11" font-weight="700" fill="#0284c7">MANIFEST: 8 FLIGHTS</text>
+
+      <!-- Wireframe Bar Chart -->
+      <g transform="translate(40, 60)">
+        <!-- Y-Axis Grid Lines -->
+        <line x1="40" y1="120" x2="480" y2="120" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="40" y1="75" x2="480" y2="75" stroke="#e2e8f0" stroke-width="1"/>
+        <line x1="40" y1="30" x2="480" y2="30" stroke="#e2e8f0" stroke-width="1"/>
+
+        <!-- Y-Axis Labels -->
+        <text x="25" y="124" font-family="monospace" font-size="10" fill="#94a3b8">0</text>
+        <text x="25" y="79" font-family="monospace" font-size="10" fill="#94a3b8">2</text>
+        <text x="25" y="34" font-family="monospace" font-size="10" fill="#94a3b8">4</text>
+
+        <!-- Bar 1: Critical Risk (>50%) -->
+        <rect x="80" y="30" width="75" height="90" rx="4" fill="#ef4444"/>
+        <text x="117" y="22" text-anchor="middle" font-family="monospace" font-size="12" font-weight="900" fill="#ef4444">3</text>
+        <text x="117" y="140" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="700" fill="#334155">Critical (&gt;50%)</text>
+
+        <!-- Bar 2: Moderate Risk (30-50%) -->
+        <rect x="220" y="60" width="75" height="60" rx="4" fill="#f59e0b"/>
+        <text x="257" y="52" text-anchor="middle" font-family="monospace" font-size="12" font-weight="900" fill="#f59e0b">2</text>
+        <text x="257" y="140" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="700" fill="#334155">Moderate (30-50%)</text>
+
+        <!-- Bar 3: Optimal (<30%) -->
+        <rect x="360" y="30" width="75" height="90" rx="4" fill="#10b981"/>
+        <text x="397" y="22" text-anchor="middle" font-family="monospace" font-size="12" font-weight="900" fill="#10b981">3</text>
+        <text x="397" y="140" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="700" fill="#334155">Optimal (&lt;30%)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM ROW: MANIFEST TRIAGE TABLE ================= -->
+  <g transform="translate(40, 475)" filter="url(#cardShadow3)">
+    <rect x="0" y="0" width="1120" height="375" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    
+    <!-- Table Header Bar with Search and Filters -->
+    <rect x="0" y="0" width="1120" height="46" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="16" y="28" font-family="monospace" font-size="11" font-weight="700" fill="#475569">COMPONENT 3.4: FLIGHT MANIFEST TRIAGE &amp; TACTICAL ACTION MATRIX</text>
+
+    <!-- Search Input Box -->
+    <g transform="translate(560, 8)">
+      <rect x="0" y="0" width="190" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="12" y="20" font-family="system-ui" font-size="11" fill="#94a3b8">🔍 Filter flight ID / route...</text>
+    </g>
+
+    <!-- Filter Buttons -->
+    <g transform="translate(765, 8)">
+      <rect x="0" y="0" width="60" height="30" rx="6" fill="#0f172a"/>
+      <text x="12" y="20" font-family="system-ui" font-size="11" font-weight="700" fill="#ffffff">All (8)</text>
+
+      <rect x="68" y="0" width="90" height="30" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1"/>
+      <text x="76" y="20" font-family="system-ui" font-size="11" font-weight="700" fill="#b91c1c">Critical (3)</text>
+
+      <rect x="166" y="0" width="90" height="30" rx="6" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+      <text x="176" y="20" font-family="system-ui" font-size="11" font-weight="700" fill="#047857">Optimal (3)</text>
+
+      <rect x="264" y="0" width="80" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="274" y="20" font-family="system-ui" font-size="11" font-weight="700" fill="#334155">Export</text>
+    </g>
+
+    <!-- Table Columns Header -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="1080" height="32" rx="4" fill="#f8fafc"/>
+      <text x="15" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">FLIGHT</text>
+      <text x="110" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">CARRIER</text>
+      <text x="220" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">ROUTE</text>
+      <text x="350" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">SCHED DEP</text>
+      <text x="460" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">DISTANCE</text>
+      <text x="560" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">AI RISK %</text>
+      <text x="660" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">EST. HOLD</text>
+      <text x="760" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">STATUS</text>
+      <text x="890" y="21" font-family="monospace" font-size="11" font-weight="800" fill="#475569">TACTICAL DIRECTIVE</text>
+    </g>
+
+    <!-- Table Rows -->
+    <g transform="translate(20, 100)">
+      
+      <!-- Row 1: UL225 (Delayed) -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="1080" height="48" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+        <text x="15" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#0f172a">🇱🇰 UL225</text>
+        <text x="110" y="29" font-family="system-ui" font-size="12" font-weight="600" fill="#334155">SriLankan</text>
+        <text x="220" y="29" font-family="monospace" font-size="12" font-weight="700" fill="#0284c7">CMB ➔ DXB</text>
+        <text x="350" y="29" font-family="monospace" font-size="12" fill="#334155">18:45</text>
+        <text x="460" y="29" font-family="monospace" font-size="12" fill="#334155">2,045 mi</text>
+        <text x="560" y="29" font-family="monospace" font-size="13" font-weight="900" fill="#ef4444">74%</text>
+        <text x="660" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#ef4444">+35 min</text>
+        
+        <rect x="760" y="11" width="85" height="26" rx="6" fill="#fee2e2"/>
+        <text x="775" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#b91c1c">DELAYED</text>
+
+        <!-- Tactical Action Buttons -->
+        <rect x="880" y="11" width="85" height="26" rx="4" fill="#0284c7"/>
+        <text x="890" y="28" font-family="system-ui" font-size="10" font-weight="700" fill="#ffffff">📢 Alert Crew</text>
+        <rect x="975" y="11" width="95" height="26" rx="4" fill="#f59e0b"/>
+        <text x="982" y="28" font-family="system-ui" font-size="10" font-weight="700" fill="#ffffff">🔄 Gate Shift</text>
+      </g>
+
+      <!-- Row 2: DL204 (Delayed) -->
+      <g transform="translate(0, 52)">
+        <rect x="0" y="0" width="1080" height="48" fill="#f8fafc" stroke="#f1f5f9" stroke-width="1"/>
+        <text x="15" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#0f172a">🇺🇸 DL204</text>
+        <text x="110" y="29" font-family="system-ui" font-size="12" font-weight="600" fill="#334155">Delta</text>
+        <text x="220" y="29" font-family="monospace" font-size="12" font-weight="700" fill="#0284c7">ATL ➔ MIA</text>
+        <text x="350" y="29" font-family="monospace" font-size="12" fill="#334155">14:30</text>
+        <text x="460" y="29" font-family="monospace" font-size="12" fill="#334155">594 mi</text>
+        <text x="560" y="29" font-family="monospace" font-size="13" font-weight="900" fill="#ef4444">82%</text>
+        <text x="660" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#ef4444">+45 min</text>
+        
+        <rect x="760" y="11" width="85" height="26" rx="6" fill="#fee2e2"/>
+        <text x="775" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#b91c1c">DELAYED</text>
+
+        <rect x="880" y="11" width="85" height="26" rx="4" fill="#0284c7"/>
+        <text x="890" y="28" font-family="system-ui" font-size="10" font-weight="700" fill="#ffffff">📢 Alert Crew</text>
+        <rect x="975" y="11" width="95" height="26" rx="4" fill="#f59e0b"/>
+        <text x="982" y="28" font-family="system-ui" font-size="10" font-weight="700" fill="#ffffff">🔄 Gate Shift</text>
+      </g>
+
+      <!-- Row 3: UL503 (On-Time) -->
+      <g transform="translate(0, 104)">
+        <rect x="0" y="0" width="1080" height="48" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+        <text x="15" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#0f172a">🇱🇰 UL503</text>
+        <text x="110" y="29" font-family="system-ui" font-size="12" font-weight="600" fill="#334155">SriLankan</text>
+        <text x="220" y="29" font-family="monospace" font-size="12" font-weight="700" fill="#0284c7">CMB ➔ LHR</text>
+        <text x="350" y="29" font-family="monospace" font-size="12" fill="#334155">13:00</text>
+        <text x="460" y="29" font-family="monospace" font-size="12" fill="#334155">5,410 mi</text>
+        <text x="560" y="29" font-family="monospace" font-size="13" font-weight="900" fill="#10b981">38%</text>
+        <text x="660" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#10b981">0 min</text>
+        
+        <rect x="760" y="11" width="85" height="26" rx="6" fill="#ecfdf5"/>
+        <text x="775" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#065f46">ON TIME</text>
+
+        <rect x="880" y="11" width="190" height="26" rx="4" fill="#f1f5f9"/>
+        <text x="915" y="28" font-family="monospace" font-size="10" font-weight="700" fill="#64748b">✔ TOLERANCE OK</text>
+      </g>
+
+      <!-- Row 4: UL101 (On-Time) -->
+      <g transform="translate(0, 156)">
+        <rect x="0" y="0" width="1080" height="48" fill="#f8fafc" stroke="#f1f5f9" stroke-width="1"/>
+        <text x="15" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#0f172a">🇱🇰 UL101</text>
+        <text x="110" y="29" font-family="system-ui" font-size="12" font-weight="600" fill="#334155">SriLankan</text>
+        <text x="220" y="29" font-family="monospace" font-size="12" font-weight="700" fill="#0284c7">CMB ➔ MLE</text>
+        <text x="350" y="29" font-family="monospace" font-size="12" fill="#334155">07:20</text>
+        <text x="460" y="29" font-family="monospace" font-size="12" fill="#334155">483 mi</text>
+        <text x="560" y="29" font-family="monospace" font-size="13" font-weight="900" fill="#10b981">18%</text>
+        <text x="660" y="29" font-family="monospace" font-size="13" font-weight="800" fill="#10b981">0 min</text>
+        
+        <rect x="760" y="11" width="85" height="26" rx="6" fill="#ecfdf5"/>
+        <text x="775" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#065f46">ON TIME</text>
+
+        <rect x="880" y="11" width="190" height="26" rx="4" fill="#f1f5f9"/>
+        <text x="915" y="28" font-family="monospace" font-size="10" font-weight="700" fill="#64748b">✔ TOLERANCE OK</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer Tag -->
+  <g transform="translate(40, 865)">
+    <text x="0" y="12" font-family="monospace" font-size="11" font-weight="600" fill="#64748b">Flycast Blueprint Reference: src/pages/Dashboard.jsx • Endpoint: POST /api/ml/predict/bulk (multipart/form-data)</text>
+    <text x="1050" y="12" font-family="monospace" font-size="11" font-weight="700" fill="#0284c7">WIRE_V1.0_APPROVED</text>
+  </g>
+</svg>

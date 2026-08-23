@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" width="100%" height="100%">
+  <defs>
+    <pattern id="grid6" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e2e8f0" stroke-width="0.75" opacity="0.6"/>
+    </pattern>
+    <filter id="cardShadow6" x="-5%" y="-5%" width="110%" height="115%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="820" fill="#f8fafc"/>
+  <rect width="1200" height="820" fill="url(#grid6)"/>
+
+  <!-- Top System Header Bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#0f172a"/>
+  <g transform="translate(30, 16)">
+    <rect x="0" y="4" width="20" height="20" rx="4" fill="#0284c7"/>
+    <path d="M 4 14 L 10 8 L 16 12 L 14 16 L 4 14 Z" fill="#ffffff"/>
+    <text x="30" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="800" fill="#ffffff" letter-spacing="1">FLYCAST</text>
+    <text x="105" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">| Aviation Intelligence Platform</text>
+  </g>
+
+  <!-- Page Header -->
+  <g transform="translate(40, 75)">
+    <rect x="0" y="0" width="280" height="24" rx="12" fill="#e0f2fe" stroke="#bae6fd" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#0284c7"/>
+    <text x="24" y="16" font-family="monospace" font-size="11" font-weight="700" fill="#0369a1">WF-06 • DESIGN SYSTEM &amp; TOKENS</text>
+    
+    <text x="0" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#0f172a">UI Component Library &amp; Aerospace Design Tokens</text>
+    <text x="0" y="74" font-family="system-ui, sans-serif" font-size="13" font-weight="400" fill="#64748b">Standardized design specifications, color semantics, typography hierarchy, and reusable HUD atomic primitives</text>
+  </g>
+
+  <!-- ================= SECTION 1: COLOR PALETTE SEMANTICS ================= -->
+  <g transform="translate(40, 165)" filter="url(#cardShadow6)">
+    <rect x="0" y="0" width="1120" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect x="0" y="0" width="1120" height="34" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="16" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#475569">DESIGN TOKEN LAYER 1: COLOR HARMONY &amp; RISK LEVEL PALETTE</text>
+
+    <g transform="translate(25, 48)">
+      <!-- Color 1: Primary Aero Sky -->
+      <rect x="0" y="0" width="165" height="45" rx="6" fill="#0284c7"/>
+      <text x="10" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#0284c7</text>
+      <text x="0" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">Aero Sky Primary</text>
+      <text x="0" y="80" font-family="system-ui" font-size="10" fill="#64748b">Brand, Buttons, Arcs</text>
+
+      <!-- Color 2: Deep Slate -->
+      <rect x="185" y="0" width="165" height="45" rx="6" fill="#0f172a"/>
+      <text x="195" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#0f172a</text>
+      <text x="185" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">Deep Space Slate</text>
+      <text x="185" y="80" font-family="system-ui" font-size="10" fill="#64748b">Header, High Contrast</text>
+
+      <!-- Color 3: Optimal Emerald -->
+      <rect x="370" y="0" width="165" height="45" rx="6" fill="#10b981"/>
+      <text x="380" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#10b981</text>
+      <text x="370" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">On-Time Emerald</text>
+      <text x="370" y="80" font-family="system-ui" font-size="10" fill="#64748b">Low Risk &lt;30%, Success</text>
+
+      <!-- Color 4: Warning Amber -->
+      <rect x="555" y="0" width="165" height="45" rx="6" fill="#f59e0b"/>
+      <text x="565" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#f59e0b</text>
+      <text x="555" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">Advisory Amber</text>
+      <text x="555" y="80" font-family="system-ui" font-size="10" fill="#64748b">Moderate Risk 30-50%</text>
+
+      <!-- Color 5: Critical Crimson -->
+      <rect x="740" y="0" width="165" height="45" rx="6" fill="#ef4444"/>
+      <text x="750" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#ef4444</text>
+      <text x="740" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">Critical Crimson</text>
+      <text x="740" y="80" font-family="system-ui" font-size="10" fill="#64748b">High Delay &gt;50%, Holds</text>
+
+      <!-- Color 6: Executive Purple -->
+      <rect x="925" y="0" width="145" height="45" rx="6" fill="#8b5cf6"/>
+      <text x="935" y="28" font-family="monospace" font-size="11" font-weight="800" fill="#ffffff">#8b5cf6</text>
+      <text x="925" y="65" font-family="system-ui" font-size="11" font-weight="700" fill="#0f172a">Executive Purple</text>
+      <text x="925" y="80" font-family="system-ui" font-size="10" fill="#64748b">Admin Directives, Ops</text>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 2: TYPOGRAPHY & CARD ELEVATION ================= -->
+  <g transform="translate(40, 335)">
+    
+    <!-- Typography Box (545px) -->
+    <g filter="url(#cardShadow6)">
+      <rect x="0" y="0" width="545" height="230" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="0" y="0" width="545" height="34" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="16" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#475569">DESIGN TOKEN LAYER 2: TYPOGRAPHY HIERARCHY</text>
+
+      <g transform="translate(25, 48)">
+        <!-- Heading Font -->
+        <text x="0" y="20" font-family="system-ui, sans-serif" font-size="18" font-weight="900" fill="#0f172a">Outfit / System Display (H1-H3)</text>
+        <text x="0" y="38" font-family="system-ui" font-size="11" fill="#64748b">Clean aerospace headlines with bold letterforms and modern curves.</text>
+
+        <!-- Body Font -->
+        <text x="0" y="75" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#334155">Inter / System Sans (Body Text &amp; Descriptions)</text>
+        <text x="0" y="93" font-family="system-ui" font-size="11" fill="#64748b">High-legibility geometric sans-serif for comfortable reading and dense UI.</text>
+
+        <!-- Monospace Flight Data Font -->
+        <text x="0" y="130" font-family="monospace" font-size="13" font-weight="800" fill="#0284c7">JetBrains Mono / Monospace (Flight Coordinates &amp; Time)</text>
+        <text x="0" y="148" font-family="monospace" font-size="11" fill="#0f172a">UL503 • CMB ➔ LHR • 1300 HRS • 5,410 MILES • 38% RISK</text>
+      </g>
+    </g>
+
+    <!-- Component Elevation & Badges Box (555px) -->
+    <g transform="translate(565, 0)" filter="url(#cardShadow6)">
+      <rect x="0" y="0" width="555" height="230" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="0" y="0" width="555" height="34" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="16" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#475569">DESIGN TOKEN LAYER 3: REUSABLE BADGES &amp; PILLS</text>
+
+      <g transform="translate(25, 48)">
+        <!-- Risk Badges Row -->
+        <text x="0" y="14" font-family="system-ui" font-size="11" font-weight="700" fill="#475569">RISK STATUS INDICATORS:</text>
+        <g transform="translate(0, 24)">
+          <!-- Optimal Badge -->
+          <rect x="0" y="0" width="145" height="30" rx="6" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+          <circle cx="14" cy="15" r="4" fill="#10b981"/>
+          <text x="26" y="19" font-family="monospace" font-size="10" font-weight="800" fill="#065f46">ON TIME (38%)</text>
+
+          <!-- Warning Badge -->
+          <rect x="160" y="0" width="155" height="30" rx="6" fill="#fffbeb" stroke="#fef3c7" stroke-width="1"/>
+          <circle cx="174" cy="15" r="4" fill="#f59e0b"/>
+          <text x="186" y="19" font-family="monospace" font-size="10" font-weight="800" fill="#b45309">MODERATE (45%)</text>
+
+          <!-- Critical Badge -->
+          <rect x="330" y="0" width="165" height="30" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1"/>
+          <circle cx="344" cy="15" r="4" fill="#ef4444"/>
+          <text x="356" y="19" font-family="monospace" font-size="10" font-weight="800" fill="#b91c1c">DELAYED (+35m)</text>
+        </g>
+
+        <!-- Role Badges Row -->
+        <g transform="translate(0, 75)">
+          <text x="0" y="14" font-family="system-ui" font-size="11" font-weight="700" fill="#475569">ROLE ACCESS PILLS:</text>
+          <g transform="translate(0, 24)">
+            <rect x="0" y="0" width="130" height="26" rx="13" fill="#e0f2fe"/>
+            <text x="16" y="17" font-family="system-ui" font-size="11" font-weight="700" fill="#0369a1">👤 Passenger</text>
+
+            <rect x="145" y="0" width="135" height="26" rx="13" fill="#fef3c7"/>
+            <text x="160" y="17" font-family="system-ui" font-size="11" font-weight="700" fill="#b45309">✈ Dispatcher</text>
+
+            <rect x="295" y="0" width="125" height="26" rx="13" fill="#ede9fe"/>
+            <text x="312" y="17" font-family="system-ui" font-size="11" font-weight="700" fill="#6d28d9">🛡️ Admin</text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= SECTION 3: REUSABLE ATOMIC BUTTONS & INPUTS ================= -->
+  <g transform="translate(40, 585)" filter="url(#cardShadow6)">
+    <rect x="0" y="0" width="1120" height="185" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect x="0" y="0" width="1120" height="34" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="16" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#475569">DESIGN TOKEN LAYER 4: REUSABLE ATOMIC BUTTONS &amp; FORM PRIMITIVES</text>
+
+    <g transform="translate(25, 48)">
+      <!-- Form Input Primitive -->
+      <g transform="translate(0, 10)">
+        <text x="0" y="0" font-family="system-ui" font-size="10" font-weight="700" fill="#475569">STANDARD INPUT STATE</text>
+        <rect x="0" y="8" width="220" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="12" y="32" font-family="monospace" font-size="12" fill="#0f172a">CMB (Colombo)</text>
+      </g>
+
+      <!-- Active Focus Input Primitive -->
+      <g transform="translate(240, 10)">
+        <text x="0" y="0" font-family="system-ui" font-size="10" font-weight="700" fill="#0284c7">FOCUSED INPUT STATE</text>
+        <rect x="0" y="8" width="220" height="38" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+        <text x="12" y="32" font-family="monospace" font-size="12" font-weight="700" fill="#0f172a">LHR (London)</text>
+      </g>
+
+      <!-- Primary Action Button -->
+      <g transform="translate(480, 10)">
+        <text x="0" y="0" font-family="system-ui" font-size="10" font-weight="700" fill="#475569">PRIMARY ACTION (VIBRANT)</text>
+        <rect x="0" y="8" width="180" height="38" rx="6" fill="#0284c7"/>
+        <text x="25" y="32" font-family="system-ui" font-size="12" font-weight="800" fill="#ffffff">⚡ RUN INFERENCE</text>
+      </g>
+
+      <!-- Secondary Dark Action -->
+      <g transform="translate(680, 10)">
+        <text x="0" y="0" font-family="system-ui" font-size="10" font-weight="700" fill="#475569">SECONDARY ACTION (DARK)</text>
+        <rect x="0" y="8" width="180" height="38" rx="6" fill="#0f172a"/>
+        <text x="28" y="32" font-family="system-ui" font-size="12" font-weight="700" fill="#ffffff">⭐ SAVE WATCHLIST</text>
+      </g>
+
+      <!-- Alert Tactical Directive Action -->
+      <g transform="translate(880, 10)">
+        <text x="0" y="0" font-family="system-ui" font-size="10" font-weight="700" fill="#475569">TACTICAL DIRECTIVE (ALERT)</text>
+        <rect x="0" y="8" width="190" height="38" rx="6" fill="#ef4444"/>
+        <text x="32" y="32" font-family="system-ui" font-size="12" font-weight="800" fill="#ffffff">📢 ALERT CREW</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer Tag -->
+  <g transform="translate(40, 790)">
+    <text x="0" y="12" font-family="monospace" font-size="11" font-weight="600" fill="#64748b">Flycast Design Token System • Tailwind CSS v4 &amp; Lucide Icons • Daylight Glassmorphic Aesthetics</text>
+    <text x="1050" y="12" font-family="monospace" font-size="11" font-weight="700" fill="#0284c7">WIRE_V1.0_APPROVED</text>
+  </g>
+</svg>

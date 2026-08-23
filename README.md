@@ -24,6 +24,7 @@
   <a href="#-executive-summary">Executive Summary</a> •
   <a href="#-system-architecture">System Architecture</a> •
   <a href="#-uml--architectural-diagrams">UML Diagrams</a> •
+  <a href="#-professional-wireframe-diagrams--ui-blueprints">Wireframes</a> •
   <a href="#-machine-learning-pipeline">ML Pipeline</a> •
   <a href="#-core-modules--role-based-workflows">Core Modules & RBAC</a> •
   <a href="#-api-reference">API Reference</a> •
@@ -354,6 +355,134 @@ classDiagram
     User "1" -- "0..*" Notification : dispatches
     MLFeaturePipeline ..> FlightItem : generates predictions for
 ```
+
+---
+
+## 📐 Professional Wireframe Diagrams & UI Blueprints
+
+The Flycast user experience is designed with high-density aerospace telemetry standards, daylight frosted glass aesthetics, and strict Role-Based Access Control (RBAC). 
+
+Comprehensive standalone vector blueprints and developer specifications are maintained in the [`docs/wireframes/`](docs/wireframes/README.md) directory:
+
+| Blueprint ID | View / Screen | Target Route | Primary User Role | Vector Schematic |
+| :--- | :--- | :--- | :--- | :--- |
+| **WF-01** | **[Passenger Flight Delay Predictor & Trajectory HUD](#1-passenger-flight-delay-predictor--trajectory-hud-wf-01)** | `/predictor` | `Passenger`, `Operator` | [View SVG](docs/wireframes/01_passenger_predictor_wireframe.svg) |
+| **WF-02** | **[Digital Boarding Pass & Personal Watchlist](#2-digital-boarding-pass--passenger-watchlist-wf-02)** | `/passenger` | `Passenger` | [View SVG](docs/wireframes/02_passenger_watchlist_wireframe.svg) |
+| **WF-03** | **[Dispatcher Operations Command & Bulk Manifest Triage](#3-dispatcher-operations-command--bulk-manifest-triage-wf-03)** | `/dashboard` | `Flight Dispatcher` | [View SVG](docs/wireframes/03_dispatcher_dashboard_wireframe.svg) |
+| **WF-04** | **[Executive Governance & ML Ops Console](#4-executive-governance--ml-ops-console-wf-04)** | `/admin` | `System Administrator` | [View SVG](docs/wireframes/04_admin_governance_wireframe.svg) |
+| **WF-05** | **[System Navigation & RBAC Information Flow](#5-system-navigation--rbac-information-flow-blueprint-wf-05)** | Architecture | `All Roles & Public` | [View SVG](docs/wireframes/05_system_navigation_wireframe.svg) |
+| **WF-06** | **[UI Component Library & Aerospace Design Tokens](#6-ui-component-library--aerospace-design-tokens-wf-06)** | Design Tokens | `Frontend Developers` | [View SVG](docs/wireframes/06_design_tokens_wireframe.svg) |
+
+---
+
+### 1. Passenger Flight Delay Predictor & Trajectory HUD (`WF-01`)
+Instant sub-30ms single-flight inference interface featuring a dynamic flight trajectory arc, analog ML speedometer gauge, factor breakdown indicators, and smart backward departure time recommendations:
+
+<div align="center">
+  <img src="docs/wireframes/01_passenger_predictor_wireframe.svg" alt="Passenger Flight Predictor Wireframe" width="100%">
+</div>
+
+```text
++----------------------------------------------------+----------------------------------------------------+
+| COMPONENT 1.1: FLIGHT TRAJECTORY HUD               | COMPONENT 1.3: MACHINE LEARNING SPEEDOMETER HUD    |
+| [CMB] ==== Great-Circle Arc (5,410 mi) ====> [LHR] |        .--.               [ON TIME EXPECTED]       |
+|                                                    |      /  38% \             Hold: 0 min              |
+| COMPONENT 1.2: INFERENCE PARAMETER FORM            |     '--------'                                     |
+| - Carrier: [ UL (SriLankan Airlines) ]             | FEATURE FACTORS: Dep Time (Low), Distance (Med)    |
+| - Flight ID: [ UL503                 ]             +----------------------------------------------------+
+| - Origin: [ CMB ]  Dest: [ LHR ]                   | COMPONENT 1.4: SMART TRAVEL PLANNER & ACTIONS      |
+| - Date: [ 2026-08-25 ]  Time: [ 1300 ]             | Optimal Departure: 10:15 AM (Buffer: 2h 45m)       |
+| [ ⚡ RUN AI DELAY INFERENCE (<28ms)  ]             | [ ⭐ Save to Watchlist ] [ 📢 Dispatch Directive ]  |
++----------------------------------------------------+----------------------------------------------------+
+```
+
+---
+
+### 2. Digital Boarding Pass & Passenger Watchlist (`WF-02`)
+Personal traveler itinerary hub displaying active countdown timers, delay exposure metrics, destination weather briefings, and real-time gate buffers:
+
+<div align="center">
+  <img src="docs/wireframes/02_passenger_watchlist_wireframe.svg" alt="Passenger Watchlist Wireframe" width="100%">
+</div>
+
+```text
++-----------------------------------------------------------------------+---------------------------------+
+| DIGITAL BOARDING PASS ITINERARY FEED                                  | DESTINATION INTELLIGENCE        |
+| 🟢 SriLankan Airlines • UL503 (Aug 25 • 13:00) [T - 10h 28m]          | WEATHER: LHR ⛅ 19°C | DXB ☀️ 38°C |
+|    CMB ➔ LHR (5,410 mi) • 38% Risk (On Time • 0m Hold)                | CHECKLIST:                      |
+|    Optimal Home Departure: 10:15 AM (Leave 2h 45m prior to flight)    | ✔ Passport Validity > 6 Months  |
+| 🔴 SriLankan Airlines • UL225 (Aug 25 • 18:45) [T - 16h 13m]          | ✔ Boarding Pass Synced          |
+|    CMB ➔ DXB (2,045 mi) • 74% Risk (Critical Delay • +35m Hold)       | ℹ️ Bag Drop Closes 60m Prior    |
++-----------------------------------------------------------------------+---------------------------------+
+```
+
+---
+
+### 3. Dispatcher Operations Command & Bulk Manifest Triage (`WF-03`)
+Enterprise operational console supporting multi-aircraft CSV ingestion, Recharts fleet delay distribution analytics, and 1-click tactical crew advisories:
+
+<div align="center">
+  <img src="docs/wireframes/03_dispatcher_dashboard_wireframe.svg" alt="Dispatcher Dashboard Wireframe" width="100%">
+</div>
+
+```text
++----------------------------------------------------+----------------------------------------------------+
+| COMPONENT 3.2: BULK CSV SCHEDULE INGESTION         | COMPONENT 3.3: FLEET RISK DISTRIBUTION (RECHARTS)  |
+| [ ☁ Drag & drop flight_schedule.csv here ]         | Critical (>50%): 3 | Moderate: 2 | Optimal: 3      |
+| [ ⚡ Load 8-Flight Preset ] [ RUN BATCH ML TRIAGE ]| [###] Critical       [###] Moderate   [###] Optimal |
++----------------------------------------------------+----------------------------------------------------+
+| COMPONENT 3.4: FLIGHT MANIFEST TRIAGE & TACTICAL ACTION MATRIX                                          |
+| Search: [ 🔍 Filter flights... ]      Filters: [ All (8) ] [ Critical (3) ] [ Optimal (3) ] [ Export ]  |
+| FLIGHT   CARRIER   ROUTE       SCHED DEP   DISTANCE   AI RISK %   EST. HOLD   STATUS     TACTICAL ACTION|
+| UL225    SriLankan CMB ➔ DXB   18:45       2,045 mi   74% 🔴      +35 min     DELAYED    [📢 Alert Crew] [🔄 Gate Shift] |
+| DL204    Delta     ATL ➔ MIA   14:30       594 mi     82% 🔴      +45 min     DELAYED    [📢 Alert Crew] [🔄 Gate Shift] |
+| UL503    SriLankan CMB ➔ LHR   13:00       5,410 mi   38% 🟢      0 min       ON TIME    [✔ TOLERANCE OK]               |
++---------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 4. Executive Governance & ML Ops Console (`WF-04`)
+Central administrative command with live microservice health telemetry, a real-time global prediction stream, an executive directive broadcast composer, and user RBAC privilege matrix:
+
+<div align="center">
+  <img src="docs/wireframes/04_admin_governance_wireframe.svg" alt="Admin Governance Wireframe" width="100%">
+</div>
+
+```text
++--------------------+--------------------+--------------------+------------------------------------------+
+| FLASK ML (5001)    | NODE GATEWAY (5000)| MONGODB ATLAS      | INFERENCE LATENCY                        |
+| Online (Waitress)  | Healthy (Express)  | Connected (Cloud)  | < 28ms Average (Fast Dual Pipeline)      |
++--------------------+--------------------+--------------------+------------------------------------------+
+| COMPONENT 4.1: GLOBAL FLIGHT PREDICTION STREAM     | COMPONENT 4.3: EXECUTIVE DIRECTIVE COMPOSER        |
+| UL225: CMB➔DXB • 74% Delay Risk • +35m Hold        | Target: UL225 • Severity: [ 🔴 CRITICAL ]        |
+| DL456: ATL➔MIA • 82% Delay Risk • +45m Hold        | Message: [ Hold aircraft at Gate 4B...         ] |
+| UL503: CMB➔LHR • 38% On-Time    • 0m Hold          | [ 📢 BROADCAST DIRECTIVE TO FLEET                ] |
++----------------------------------------------------+----------------------------------------------------+
+| COMPONENT 4.2: USER RBAC ACCESS MATRIX             | COMPONENT 4.4: ML OPS & MODEL MANAGEMENT           |
+| admin (Admin) | dispatcher (Dispatcher) | jdoe123  | Accuracy: 94.8% (AUC 0.91) | RMSE: 8.2m (Hot-Reload) |
++----------------------------------------------------+----------------------------------------------------+
+```
+
+---
+
+### 5. System Navigation & RBAC Information Flow Blueprint (`WF-05`)
+Comprehensive map of multi-tier user roles, public/protected routes, JWT authorization gates, and polyglot microservice communication:
+
+<div align="center">
+  <img src="docs/wireframes/05_system_navigation_wireframe.svg" alt="System Navigation Wireframe" width="100%">
+</div>
+
+---
+
+### 6. UI Component Library & Aerospace Design Tokens (`WF-06`)
+Design token specifications detailing color semantics, typography hierarchy (`Outfit`, `Inter`, `JetBrains Mono`), glassmorphic containers, and reusable atomic buttons:
+
+<div align="center">
+  <img src="docs/wireframes/06_design_tokens_wireframe.svg" alt="UI Design Tokens Wireframe" width="100%">
+</div>
+
+> *For complete technical specifications, component hierarchy trees, and interaction triggers, see the [Master Wireframes Documentation](docs/wireframes/README.md).*
 
 ---
 
