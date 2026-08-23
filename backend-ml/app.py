@@ -27,43 +27,103 @@ for model_name in expected_models:
     else:
         print(f"Warning: {model_name} not found in {models_dir}")
 
-def safe_transform(le, series, default=-1):
-    # For a pandas series, transform known values, otherwise default
+# Carrier & Airport Knowledge Mapping for International & Sri Lankan Flights
+CARRIER_ALIASES = {
+    'UL': 'Delta Air Lines Inc.',         # SriLankan Airlines (Full-service flag carrier profile)
+    'SRILANKAN': 'Delta Air Lines Inc.',
+    'SRILANKAN AIRLINES': 'Delta Air Lines Inc.',
+    'EK': 'United Air Lines Inc.',        # Emirates
+    'QR': 'United Air Lines Inc.',        # Qatar Airways
+    'SQ': 'American Airlines Inc.',       # Singapore Airlines
+    'AI': 'Delta Air Lines Inc.',         # Air India
+    '6E': 'Southwest Airlines Co.',       # IndiGo (Low-cost high frequency)
+    'FZ': 'Southwest Airlines Co.',       # flydubai
+    'AA': 'American Airlines Inc.',
+    'DL': 'Delta Air Lines Inc.',
+    'UA': 'United Air Lines Inc.',
+    'WN': 'Southwest Airlines Co.',
+    'B6': 'JetBlue Airways',
+    'AS': 'Alaska Airlines Inc.',
+    'NK': 'Spirit Air Lines'
+}
+
+AIRPORT_ALIASES = {
+    'CMB': 'JFK',   # Colombo Bandaranaike International Airport (Primary Hub Profile)
+    'HRI': 'MIA',   # Mattala Rajapaksa International Airport
+    'JAF': 'BOS',   # Jaffna International Airport
+    'MLE': 'MCO',   # Velana International Airport, Male
+    'DXB': 'LAX',   # Dubai International
+    'SIN': 'SFO',   # Singapore Changi
+    'LHR': 'ORD',   # London Heathrow
+    'MAA': 'ATL',   # Chennai International
+    'BKK': 'SEA',   # Bangkok Suvarnabhumi
+    'KUL': 'DEN',   # Kuala Lumpur International
+    'DEL': 'DFW',   # Delhi Indira Gandhi International
+    'DOH': 'LAX',   # Doha Hamad International
+    'MEL': 'SFO'    # Melbourne Tullamarine
+}
+
+def resolve_carrier(val):
+    if not val: return 'American Airlines Inc.'
+    clean_val = str(val).strip().upper()
+    return CARRIER_ALIASES.get(clean_val, val)
+
+def resolve_airport(val):
+    if not val: return 'JFK'
+    clean_val = str(val).strip().upper()
+    return AIRPORT_ALIASES.get(clean_val, val)
+
+def safe_transform(le, series, default=0):
+    if not le: return pd.Series([default] * len(series))
     known_classes = set(le.classes_)
-    return series.apply(lambda x: le.transform([x])[0] if x in known_classes else default)
+    return series.apply(lambda x: le.transform([x])[0] if x in known_classes else (
+        le.transform([resolve_carrier(x)])[0] if resolve_carrier(x) in known_classes else (
+            le.transform([resolve_airport(x)])[0] if resolve_airport(x) in known_classes else le.transform([le.classes_[0]])[0]
+        )
+    ))
+
+def safe_transform_single(le, val, default=0):
+    if not le: return default
+    try:
+        clean_val = str(val).strip().upper() if val else ''
+        if clean_val in le.classes_:
+            return le.transform([clean_val])[0]
+        
+        # Check alias resolvers
+        resolved_c = resolve_carrier(clean_val)
+        if resolved_c in le.classes_:
+            return le.transform([resolved_c])[0]
+            
+        resolved_a = resolve_airport(clean_val)
+        if resolved_a in le.classes_:
+            return le.transform([resolved_a])[0]
+            
+        return le.transform([le.classes_[0]])[0]
+    except Exception:
+        return default
 
 def process_flight(flight_data):
     """
     For single prediction dict
     """
     try:
-        dt = datetime.strptime(flight_data.get('date', '2023-01-01'), '%Y-%m-%d')
+        dt = datetime.strptime(flight_data.get('date', '2026-08-25'), '%Y-%m-%d')
         month = dt.month
         day_of_week = dt.isoweekday() # 1-7
     except Exception:
-        month, day_of_week = 1, 1
+        month, day_of_week = 8, 3
 
-    carrier = flight_data.get('carrier', 'AA')
-    origin = flight_data.get('origin', 'JFK')
-    dest = flight_data.get('dest', 'LAX')
-    crs_dep_time = int(flight_data.get('crs_dep_time', 1200))
-    distance = int(flight_data.get('distance', 1000))
+    carrier = flight_data.get('carrier', 'UL')
+    origin = flight_data.get('origin', 'CMB')
+    dest = flight_data.get('dest', 'LHR')
+    crs_dep_time = int(flight_data.get('crs_dep_time', 1300))
+    distance = int(flight_data.get('distance', 2500))
 
     airline_enc = safe_transform_single(models.get('le_carrier.pkl'), carrier)
     origin_enc = safe_transform_single(models.get('le_origin.pkl'), origin)
     dest_enc = safe_transform_single(models.get('le_dest.pkl'), dest)
 
     return [month, day_of_week, airline_enc, origin_enc, dest_enc, crs_dep_time, distance]
-
-def safe_transform_single(le, val, default=-1):
-    if not le: return 0
-    try:
-        if val in le.classes_:
-            return le.transform([val])[0]
-        else:
-            return le.transform([le.classes_[0]])[0]
-    except Exception:
-        return default
 
 @app.route('/health', methods=['GET'])
 def health_check():

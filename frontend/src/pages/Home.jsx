@@ -21,26 +21,50 @@ import {
 } from 'lucide-react';
 
 const Home = () => {
-  // Interactive Home Sandbox state
-  const [sandboxFlight, setSandboxFlight] = useState('AA123');
+  // Interactive Home Sandbox state (featuring SriLankan Airlines UL503 Colombo to London)
+  const [sandboxFlight, setSandboxFlight] = useState('UL503');
   const [simulating, setSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState({
-    flight_id: 'AA123',
-    carrier: 'American Airlines (AA)',
-    route: 'JFK ➔ LAX',
-    distance: '2,475 miles',
-    dep_time: '08:00 AM',
-    delay_prob: 0.14,
+    flight_id: 'UL503',
+    carrier: 'SriLankan Airlines (UL)',
+    route: 'CMB (Colombo) ➔ LHR (London)',
+    distance: '5,410 miles',
+    dep_time: '01:00 PM (Afternoon)',
+    delay_prob: 0.38,
     estimated_delay: 0,
     status: 'On Time',
-    confidence: '98.2%'
+    confidence: '97.8%'
   });
 
   const handleSimulate = (flightCode) => {
     setSandboxFlight(flightCode);
     setSimulating(true);
     setTimeout(() => {
-      if (flightCode === 'DL456') {
+      if (flightCode === 'UL225') {
+        setSimulationResult({
+          flight_id: 'UL225',
+          carrier: 'SriLankan Airlines (UL)',
+          route: 'CMB (Colombo) ➔ DXB (Dubai)',
+          distance: '2,045 miles',
+          dep_time: '06:45 PM (Evening Peak)',
+          delay_prob: 0.74,
+          estimated_delay: 35,
+          status: 'High Delay Risk',
+          confidence: '95.4%'
+        });
+      } else if (flightCode === 'UL101') {
+        setSimulationResult({
+          flight_id: 'UL101',
+          carrier: 'SriLankan Airlines (UL)',
+          route: 'CMB (Colombo) ➔ MLE (Male)',
+          distance: '483 miles',
+          dep_time: '07:20 AM (Morning)',
+          delay_prob: 0.18,
+          estimated_delay: 0,
+          status: 'On Time',
+          confidence: '98.6%'
+        });
+      } else if (flightCode === 'DL456') {
         setSimulationResult({
           flight_id: 'DL456',
           carrier: 'Delta Air Lines (DL)',
@@ -52,33 +76,21 @@ const Home = () => {
           status: 'High Delay Risk',
           confidence: '95.6%'
         });
-      } else if (flightCode === 'UA789') {
-        setSimulationResult({
-          flight_id: 'UA789',
-          carrier: 'United Airlines (UA)',
-          route: 'ORD ➔ SFO',
-          distance: '1,846 miles',
-          dep_time: '06:15 PM (Evening)',
-          delay_prob: 0.64,
-          estimated_delay: 28,
-          status: 'Moderate Risk',
-          confidence: '92.4%'
-        });
       } else {
         setSimulationResult({
-          flight_id: 'AA123',
-          carrier: 'American Airlines (AA)',
-          route: 'JFK ➔ LAX',
-          distance: '2,475 miles',
-          dep_time: '08:00 AM (Morning)',
-          delay_prob: 0.14,
+          flight_id: 'UL503',
+          carrier: 'SriLankan Airlines (UL)',
+          route: 'CMB (Colombo) ➔ LHR (London)',
+          distance: '5,410 miles',
+          dep_time: '01:00 PM (Afternoon)',
+          delay_prob: 0.38,
           estimated_delay: 0,
           status: 'On Time',
-          confidence: '98.2%'
+          confidence: '97.8%'
         });
       }
       setSimulating(false);
-    }, 600);
+    }, 500);
   };
 
   return (
@@ -188,39 +200,51 @@ const Home = () => {
               {/* Sample Preset Buttons */}
               <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0">
                 <button
-                  onClick={() => handleSimulate('AA123')}
+                  onClick={() => handleSimulate('UL503')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold font-mono-code transition-all flex items-center gap-2 ${
-                    sandboxFlight === 'AA123'
+                    sandboxFlight === 'UL503'
                       ? 'bg-sky-500 text-white shadow-md'
                       : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <PlaneTakeoff className="w-3.5 h-3.5" />
-                  <span>AA123 (JFK ➔ LAX)</span>
+                  <span>🇱🇰 UL503 (CMB ➔ LHR)</span>
+                </button>
+
+                <button
+                  onClick={() => handleSimulate('UL101')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold font-mono-code transition-all flex items-center gap-2 ${
+                    sandboxFlight === 'UL101'
+                      ? 'bg-emerald-500 text-white shadow-md'
+                      : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <PlaneTakeoff className="w-3.5 h-3.5" />
+                  <span>🇱🇰 UL101 (CMB ➔ MLE)</span>
+                </button>
+
+                <button
+                  onClick={() => handleSimulate('UL225')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold font-mono-code transition-all flex items-center gap-2 ${
+                    sandboxFlight === 'UL225'
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>🇱🇰 UL225 (CMB ➔ DXB)</span>
                 </button>
 
                 <button
                   onClick={() => handleSimulate('DL456')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold font-mono-code transition-all flex items-center gap-2 ${
                     sandboxFlight === 'DL456'
-                      ? 'bg-red-500 text-white shadow-md'
-                      : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>DL456 (ATL ➔ MIA)</span>
-                </button>
-
-                <button
-                  onClick={() => handleSimulate('UA789')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold font-mono-code transition-all flex items-center gap-2 ${
-                    sandboxFlight === 'UA789'
                       ? 'bg-amber-500 text-white shadow-md'
                       : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <Clock className="w-3.5 h-3.5" />
-                  <span>UA789 (ORD ➔ SFO)</span>
+                  <span>DL456 (ATL ➔ MIA)</span>
                 </button>
               </div>
             </div>

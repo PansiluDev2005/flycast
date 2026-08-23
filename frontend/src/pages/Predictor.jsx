@@ -19,8 +19,48 @@ import {
 
 const PRESET_FLIGHTS = [
   {
+    label: '🇱🇰 UL503 (CMB ➔ LHR)',
+    desc: 'SriLankan Airlines • Colombo to London Heathrow',
+    flightId: 'UL503',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'LHR',
+    crsDepTime: '1300',
+    distance: '5410'
+  },
+  {
+    label: '🇱🇰 UL101 (CMB ➔ MLE)',
+    desc: 'SriLankan Airlines • Colombo to Male Maldives',
+    flightId: 'UL101',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'MLE',
+    crsDepTime: '0720',
+    distance: '483'
+  },
+  {
+    label: '🇱🇰 UL225 (CMB ➔ DXB)',
+    desc: 'SriLankan Airlines • Colombo to Dubai',
+    flightId: 'UL225',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'DXB',
+    crsDepTime: '1845',
+    distance: '2045'
+  },
+  {
+    label: '🇱🇰 UL121 (CMB ➔ MAA)',
+    desc: 'SriLankan Airlines • Colombo to Chennai',
+    flightId: 'UL121',
+    carrier: 'UL',
+    origin: 'CMB',
+    dest: 'MAA',
+    crsDepTime: '1415',
+    distance: '400'
+  },
+  {
     label: 'AA123 (JFK ➔ LAX)',
-    desc: 'Morning Long-Haul • Low Risk',
+    desc: 'American Airlines • Transcontinental',
     flightId: 'AA123',
     carrier: 'AA',
     origin: 'JFK',
@@ -30,47 +70,27 @@ const PRESET_FLIGHTS = [
   },
   {
     label: 'DL456 (ATL ➔ MIA)',
-    desc: 'Afternoon Peak • High Risk',
+    desc: 'Delta Air Lines • Afternoon Peak',
     flightId: 'DL456',
     carrier: 'DL',
     origin: 'ATL',
     dest: 'MIA',
     crsDepTime: '1430',
     distance: '594'
-  },
-  {
-    label: 'UA789 (ORD ➔ SFO)',
-    desc: 'Evening Hub Connector',
-    flightId: 'UA789',
-    carrier: 'UA',
-    origin: 'ORD',
-    dest: 'SFO',
-    crsDepTime: '1815',
-    distance: '1846'
-  },
-  {
-    label: 'WN101 (DEN ➔ LAS)',
-    desc: 'Mountain Transit',
-    flightId: 'WN101',
-    carrier: 'WN',
-    origin: 'DEN',
-    dest: 'LAS',
-    crsDepTime: '1030',
-    distance: '628'
   }
 ];
 
 const Predictor = () => {
   const { user } = useContext(AuthContext);
   
-  // Form State
-  const [flightId, setFlightId] = useState('AA123');
-  const [carrier, setCarrier] = useState('AA');
-  const [origin, setOrigin] = useState('JFK');
-  const [dest, setDest] = useState('LAX');
+  // Form State (Defaulting to SriLankan Airlines UL503 Colombo to London)
+  const [flightId, setFlightId] = useState('UL503');
+  const [carrier, setCarrier] = useState('UL');
+  const [origin, setOrigin] = useState('CMB');
+  const [dest, setDest] = useState('LHR');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [crsDepTime, setCrsDepTime] = useState('0800');
-  const [distance, setDistance] = useState('2475');
+  const [crsDepTime, setCrsDepTime] = useState('1300');
+  const [distance, setDistance] = useState('5410');
   
   // Results & Feedback State
   const [loading, setLoading] = useState(false);
