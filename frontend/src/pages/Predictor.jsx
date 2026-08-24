@@ -1,18 +1,18 @@
 import { useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { 
-  Search, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Plane, 
-  Navigation, 
-  Bookmark, 
-  Sparkles, 
-  MapPin, 
-  Calendar, 
-  Milestone, 
+import {
+  Search,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  Plane,
+  Navigation,
+  Bookmark,
+  Sparkles,
+  MapPin,
+  Calendar,
+  Milestone,
   TrendingUp,
   Cpu,
   Megaphone,
@@ -86,7 +86,7 @@ const PRESET_FLIGHTS = [
 
 const Predictor = () => {
   const { user } = useContext(AuthContext);
-  
+
   // Form State (Defaulting to SriLankan Airlines UL503 Colombo to London)
   const [flightId, setFlightId] = useState('UL503');
   const [carrier, setCarrier] = useState('UL');
@@ -95,7 +95,7 @@ const Predictor = () => {
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [crsDepTime, setCrsDepTime] = useState('1300');
   const [distance, setDistance] = useState('5410');
-  
+
   // Results & Feedback State
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -122,20 +122,20 @@ const Predictor = () => {
 
     try {
       const token = user?.token || 'mock-token';
-      const payload = { 
-        flight_id: flightId, 
+      const payload = {
+        flight_id: flightId,
         carrier: carrier.toUpperCase(),
-        origin: origin.toUpperCase(), 
+        origin: origin.toUpperCase(),
         dest: dest.toUpperCase(),
         date,
         crs_dep_time: parseInt(crsDepTime, 10),
         distance: parseInt(distance, 10)
       };
-      
+
       const res = await axios.post('http://localhost:5000/api/ml/predict', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       let resData = (res.data && res.data.length > 0) ? res.data[0] : res.data;
       setResult(resData);
 
@@ -158,23 +158,23 @@ const Predictor = () => {
         };
         const updatedLog = [record, ...auditLog.filter(p => p.flight_id !== flightId || p.date !== date)].slice(0, 50);
         localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(updatedLog));
-      } catch (e) {}
+      } catch (e) { }
 
     } catch (err) {
       console.warn('API error, using local ML simulation fallback:', err);
-      
+
       // Fallback calculation
       const depHour = parseInt(crsDepTime.slice(0, 2) || '12', 10);
       const isPeak = depHour >= 14 && depHour <= 19;
       const isHighCarrier = carrier.toUpperCase() === 'DL' || carrier.toUpperCase() === 'B6';
-      
+
       let mockProb = 0.28;
       if (isPeak) mockProb += 0.45;
       if (isHighCarrier) mockProb += 0.22;
       mockProb = Math.min(0.92, Math.max(0.12, mockProb));
-      
+
       const mockDelayMins = mockProb > 0.5 ? Math.round(25 + mockProb * 35) : 0;
-      
+
       const fallbackResult = {
         flight_id: flightId,
         delay_probability: mockProb,
@@ -202,7 +202,7 @@ const Predictor = () => {
         };
         const updatedLog = [record, ...auditLog.filter(p => p.flight_id !== flightId || p.date !== date)].slice(0, 50);
         localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(updatedLog));
-      } catch (e) {}
+      } catch (e) { }
     } finally {
       setLoading(false);
     }
@@ -244,7 +244,7 @@ const Predictor = () => {
         delay_probability: result.delay_probability,
         estimated_minutes: result.estimated_delay_minutes
       }, { headers: { Authorization: `Bearer ${token}` } });
-      
+
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4000);
     } catch (err) {
@@ -259,7 +259,7 @@ const Predictor = () => {
     if (!result) return;
     const probPct = (result.delay_probability * 100).toFixed(0);
     const msg = `[ADMIN DIRECTIVE] Flight ${result.flight_id} (${origin} ➔ ${dest}) on ${date} flagged with ${probPct}% delay risk (+${result.estimated_delay_minutes}m hold). Action: ${actionType}.`;
-    
+
     const newNotif = {
       _id: `notif-admin-${Date.now()}`,
       flightId: result.flight_id,
@@ -304,11 +304,11 @@ const Predictor = () => {
       const mins = parseInt(depTimeHHMM.slice(2, 4) || '00', 10);
       const flightDate = new Date();
       flightDate.setHours(hours, mins, 0);
-      
+
       flightDate.setMinutes(flightDate.getMinutes() + delayMins);
       flightDate.setHours(flightDate.getHours() - 2);
       flightDate.setMinutes(flightDate.getMinutes() - 45);
-      
+
       return flightDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (e) {
       return '2h 45m before departure';
@@ -317,7 +317,7 @@ const Predictor = () => {
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col gap-8">
-      
+
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
@@ -340,11 +340,10 @@ const Predictor = () => {
                 key={idx}
                 type="button"
                 onClick={() => applyPreset(p)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono-code font-bold transition-all border ${
-                  flightId === p.flightId 
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono-code font-bold transition-all border ${flightId === p.flightId
                     ? 'bg-sky-500 text-white shadow-sm border-sky-500'
                     : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                }`}
+                  }`}
                 title={p.desc}
               >
                 {p.flightId} ({p.origin}➔{p.dest})
@@ -356,15 +355,15 @@ const Predictor = () => {
 
       {/* Main Grid: Form Left, Result / Visualizer Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* Left Column: Form & Route Simulator HUD */}
         <div className="lg:col-span-6 flex flex-col gap-6">
-          
+
           {/* Flight Route Visualizer Card with Radar/Clouds Background */}
           <div className="rounded-2xl border border-sky-200 relative overflow-hidden shadow-md bg-white">
-            
+
             {/* Background image overlay */}
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
               style={{ backgroundImage: "url('/images/radar-clouds.jpg')" }}
             ></div>
@@ -378,7 +377,7 @@ const Predictor = () => {
 
               {/* SVG Flight Path Vector Graphic */}
               <div className="py-4 px-2 flex items-center justify-between relative">
-                
+
                 {/* Origin Badge */}
                 <div className="flex flex-col items-center gap-1 z-10">
                   <div className="w-12 h-12 rounded-2xl bg-sky-500 text-white flex items-center justify-center font-mono-code font-bold text-base shadow-md">
@@ -397,13 +396,13 @@ const Predictor = () => {
                         <stop offset="100%" stopColor="#2563eb" stopOpacity="0.4" />
                       </linearGradient>
                     </defs>
-                    
-                    <path 
-                      d="M 10 30 Q 100 0 190 30" 
-                      fill="none" 
-                      stroke="url(#routeGradientLight)" 
-                      strokeWidth="2.5" 
-                      className="animate-flight-path" 
+
+                    <path
+                      d="M 10 30 Q 100 0 190 30"
+                      fill="none"
+                      stroke="url(#routeGradientLight)"
+                      strokeWidth="2.5"
+                      className="animate-flight-path"
                     />
 
                     <g transform="translate(95, 8)">
@@ -432,15 +431,15 @@ const Predictor = () => {
             </h2>
 
             <form onSubmit={handlePredict} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              
+
               {/* Flight ID */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 font-mono-code">
                   Flight ID / Code
                 </label>
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={flightId}
                     onChange={(e) => setFlightId(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -456,8 +455,8 @@ const Predictor = () => {
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 font-mono-code">
                   Carrier Code (IATA)
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={carrier}
                   onChange={(e) => setCarrier(e.target.value.toUpperCase())}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -465,15 +464,15 @@ const Predictor = () => {
                   required
                 />
               </div>
-              
+
               {/* Origin Airport */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 font-mono-code">
                   Origin Airport
                 </label>
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value.toUpperCase())}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -490,8 +489,8 @@ const Predictor = () => {
                   Destination Airport
                 </label>
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={dest}
                     onChange={(e) => setDest(e.target.value.toUpperCase())}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -507,8 +506,8 @@ const Predictor = () => {
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 font-mono-code">
                   Flight Date
                 </label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -522,8 +521,8 @@ const Predictor = () => {
                   Dep. Time (HHMM Military)
                 </label>
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={crsDepTime}
                     onChange={(e) => setCrsDepTime(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -540,8 +539,8 @@ const Predictor = () => {
                   Flight Distance (Miles)
                 </label>
                 <div className="relative">
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={distance}
                     onChange={(e) => setDistance(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
@@ -554,8 +553,8 @@ const Predictor = () => {
 
               {/* Submit Action */}
               <div className="sm:col-span-2 mt-2">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={loading}
                   className="w-full py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.4)] flex justify-center items-center gap-2 text-base"
                 >
@@ -579,7 +578,7 @@ const Predictor = () => {
 
         {/* Right Column: AI Inference Result & Passenger Intelligence */}
         <div className="lg:col-span-6 flex flex-col gap-6">
-          
+
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
@@ -589,7 +588,7 @@ const Predictor = () => {
 
           {result ? (
             <div className="glass-hud p-6 sm:p-8 rounded-2xl flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-300 border-slate-200 shadow-lg bg-white">
-              
+
               {/* Result Header & Status Badge */}
               <div className="flex items-center justify-between pb-6 border-b border-slate-200">
                 <div className="flex flex-col">
@@ -600,11 +599,10 @@ const Predictor = () => {
                   </div>
                 </div>
 
-                <div className={`px-4 py-1.5 rounded-full text-xs font-mono-code font-bold uppercase tracking-wider flex items-center gap-2 ${
-                  result.status === 'Delayed' 
-                    ? 'bg-red-100 text-red-700 border border-red-200 shadow-sm' 
+                <div className={`px-4 py-1.5 rounded-full text-xs font-mono-code font-bold uppercase tracking-wider flex items-center gap-2 ${result.status === 'Delayed'
+                    ? 'bg-red-100 text-red-700 border border-red-200 shadow-sm'
                     : 'bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm'
-                }`}>
+                  }`}>
                   {result.status === 'Delayed' ? (
                     <>
                       <AlertTriangle className="w-4 h-4 text-red-600" />
@@ -621,11 +619,11 @@ const Predictor = () => {
 
               {/* Radial Risk Speedometer & Delay Duration Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
+
                 {/* Dial 1: Risk Probability */}
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                   <span className="text-xs font-mono-code uppercase text-slate-500 font-bold">Delay Risk Index</span>
-                  
+
                   <div className="my-4 flex items-center justify-center">
                     <div className="relative flex items-center justify-center">
                       <svg className="w-32 h-32 -rotate-90">
@@ -668,11 +666,10 @@ const Predictor = () => {
                 {/* Dial 2: Duration Regressor */}
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                   <span className="text-xs font-mono-code uppercase text-slate-500 font-bold">Projected Hold Duration</span>
-                  
+
                   <div className="my-4 flex flex-col items-center justify-center text-center">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-2 ${
-                      result.estimated_delay_minutes > 0 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-emerald-100 text-emerald-600 border border-emerald-200'
-                    }`}>
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-2 ${result.estimated_delay_minutes > 0 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-emerald-100 text-emerald-600 border border-emerald-200'
+                      }`}>
                       <Clock className="w-8 h-8" />
                     </div>
                     <span className={`text-4xl font-extrabold font-mono-code ${result.estimated_delay_minutes > 0 ? 'text-red-600' : 'text-slate-900'}`}>
@@ -693,7 +690,7 @@ const Predictor = () => {
                   <TrendingUp className="w-3.5 h-3.5 text-sky-600" />
                   <span>Ensemble Feature Influence Factors</span>
                 </span>
-                
+
                 <div className="flex flex-col gap-2.5 pt-1">
                   <div>
                     <div className="flex justify-between text-xs font-mono-code mb-1 text-slate-700">
@@ -749,7 +746,7 @@ const Predictor = () => {
 
               {/* Action Buttons: Add to Watchlist */}
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                <button 
+                <button
                   onClick={handleSaveToWatchlist}
                   className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm"
                 >
