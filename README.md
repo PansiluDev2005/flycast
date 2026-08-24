@@ -358,6 +358,57 @@ classDiagram
 
 ---
 
+### 7. Entity-Relationship (ER) Diagram
+Illustrates the MongoDB document collections, their embedded subdocuments, and the relational mapping between them:
+
+```mermaid
+erDiagram
+    USER ||--o{ WATCHLIST : "owns"
+    USER ||--o{ NOTIFICATION : "dispatches"
+    WATCHLIST ||--|{ FLIGHT_ITEM : "contains"
+
+    USER {
+        ObjectId _id PK
+        String username "unique"
+        String password
+        String role "enum: passenger, dispatcher, admin"
+        Date createdAt
+        Date updatedAt
+    }
+
+    WATCHLIST {
+        ObjectId _id PK
+        ObjectId user_id FK "ref: User"
+        Array flights "embedded FlightItems"
+        Date createdAt
+        Date updatedAt
+    }
+
+    FLIGHT_ITEM {
+        String flight_id
+        String origin
+        String destination
+        Date scheduled_departure
+        String carrier
+        Number delay_probability
+        Number estimated_minutes
+    }
+
+    NOTIFICATION {
+        ObjectId _id PK
+        String flightId
+        String action
+        String message
+        String priority "enum: critical, warning, info, alert, system"
+        Boolean read
+        ObjectId createdBy FK "ref: User"
+        Date createdAt
+        Date updatedAt
+    }
+```
+
+---
+
 ## 📐 Professional Wireframe Diagrams & UI Blueprints
 
 The Flycast user experience is designed with high-density aerospace telemetry standards, daylight frosted glass aesthetics, and strict Role-Based Access Control (RBAC). 
