@@ -66,3 +66,8 @@ Thumbs.db
 # Uploads (user-uploaded files)
 # ========================
 backend-node/uploads/
+
+# ========================
+# Documentation / Instructions
+# ========================
+INSTRUCTIONS flycast.md
