@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ message: 'Unauthorized Access - Please Log In' }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {

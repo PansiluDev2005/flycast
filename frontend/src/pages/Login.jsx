@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
@@ -23,6 +23,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const authMessage = location.state?.message;
 
   const handleLogin = async (e) => {
     if (e) e.preventDefault();
@@ -98,6 +100,12 @@ const Login = () => {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">Operator Sign In</h2>
             <p className="text-slate-500 text-xs sm:text-sm mt-1">Access the Flycast AI delay forecasting console</p>
           </div>
+
+          {authMessage && (
+            <div className="bg-red-500 text-white font-bold p-4 rounded-xl mb-6 text-sm text-center shadow-[0_4px_14px_rgba(239,68,68,0.3)] border border-red-400">
+              {authMessage}
+            </div>
+          )}
 
           {/* 1-Click Instant Demo Role Selector */}
           <div className="mb-6 p-4 rounded-2xl bg-slate-50 border border-sky-200 flex flex-col gap-2.5 shadow-inner">
