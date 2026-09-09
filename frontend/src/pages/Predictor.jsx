@@ -161,48 +161,8 @@ const Predictor = () => {
       } catch (e) { }
 
     } catch (err) {
-      console.warn('API error, using local ML simulation fallback:', err);
-
-      // Fallback calculation
-      const depHour = parseInt(crsDepTime.slice(0, 2) || '12', 10);
-      const isPeak = depHour >= 14 && depHour <= 19;
-      const isHighCarrier = carrier.toUpperCase() === 'DL' || carrier.toUpperCase() === 'B6';
-
-      let mockProb = 0.28;
-      if (isPeak) mockProb += 0.45;
-      if (isHighCarrier) mockProb += 0.22;
-      mockProb = Math.min(0.92, Math.max(0.12, mockProb));
-
-      const mockDelayMins = mockProb > 0.5 ? Math.round(25 + mockProb * 35) : 0;
-
-      const fallbackResult = {
-        flight_id: flightId,
-        delay_probability: mockProb,
-        estimated_delay_minutes: mockDelayMins,
-        status: mockProb > 0.5 ? 'Delayed' : 'On Time'
-      };
-
-      setResult(fallbackResult);
-
-      try {
-        const auditLog = JSON.parse(localStorage.getItem('flycast_prediction_audit_log') || '[]');
-        const record = {
-          _id: `pred-${Date.now()}`,
-          flight_id: flightId,
-          carrier: carrier.toUpperCase(),
-          origin: origin.toUpperCase(),
-          dest: dest.toUpperCase(),
-          date,
-          crs_dep_time: crsDepTime,
-          distance,
-          delay_probability: mockProb,
-          estimated_delay_minutes: mockDelayMins,
-          status: fallbackResult.status,
-          timestamp: new Date().toISOString()
-        };
-        const updatedLog = [record, ...auditLog.filter(p => p.flight_id !== flightId || p.date !== date)].slice(0, 50);
-        localStorage.setItem('flycast_prediction_audit_log', JSON.stringify(updatedLog));
-      } catch (e) { }
+      console.error('Prediction API error:', err);
+      setError('Prediction service is unreachable. Please ensure the ML backend is running.');
     } finally {
       setLoading(false);
     }
@@ -298,7 +258,7 @@ const Predictor = () => {
     setTimeout(() => setAdminBroadcastMsg(''), 5000);
   };
 
-  const calculateLeaveHomeTime = (depTimeHHMM, delayMins = 0) => {
+  const calculateAirportArrivalTime = (depTimeHHMM, delayMins = 0) => {
     try {
       const hours = parseInt(depTimeHHMM.slice(0, 2), 10);
       const mins = parseInt(depTimeHHMM.slice(2, 4) || '00', 10);
@@ -307,11 +267,10 @@ const Predictor = () => {
 
       flightDate.setMinutes(flightDate.getMinutes() + delayMins);
       flightDate.setHours(flightDate.getHours() - 2);
-      flightDate.setMinutes(flightDate.getMinutes() - 45);
 
       return flightDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (e) {
-      return '2h 45m before departure';
+      return '2h before departure';
     }
   };
 
@@ -734,7 +693,7 @@ const Predictor = () => {
                     Smart Travel Optimization
                   </span>
                   <p className="text-slate-900 font-bold text-base mt-0.5">
-                    Recommended Home Departure: {calculateLeaveHomeTime(crsDepTime, result.estimated_delay_minutes)}
+                    Recommended Airport Arrival: {calculateAirportArrivalTime(crsDepTime, result.estimated_delay_minutes)}
                   </p>
                   <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                     {result.status === 'Delayed'

@@ -34,7 +34,9 @@ const Register = () => {
         const { token } = res.data;
         login({ token, role, username });
       } catch (authErr) {
-        login({ token: 'mock-jwt-token-fallback', role, username });
+        setError(authErr.response?.data?.message || 'Login after registration failed.');
+        setLoading(false);
+        return;
       }
 
       if (role === 'admin') navigate('/admin');
@@ -42,10 +44,7 @@ const Register = () => {
       else navigate('/predictor');
 
     } catch (err) {
-      login({ token: 'mock-jwt-token-fallback', role, username });
-      if (role === 'admin') navigate('/admin');
-      else if (role === 'dispatcher') navigate('/dashboard');
-      else navigate('/predictor');
+      setError(err.response?.data?.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +79,7 @@ const Register = () => {
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="flex flex-col gap-4">
+          <form onSubmit={handleRegister} className="flex flex-col gap-4" autoComplete="off">
             
             <div>
               <label className="block text-xs font-mono-code text-slate-700 uppercase tracking-wider mb-2 font-bold">
@@ -92,27 +91,14 @@ const Register = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors pl-11"
-                  placeholder="e.g. aviation_pro"
+                  autoComplete="off"
                   required
                 />
                 <User className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-mono-code text-slate-700 uppercase tracking-wider mb-2 font-bold">
-                Select Primary Role
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 transition-colors font-medium"
-              >
-                <option value="passenger">Passenger (B2C Predictor & Watchlist)</option>
-                <option value="dispatcher">Flight Dispatcher (B2B Bulk CSV Triage)</option>
-                <option value="admin">Administrator (System Governance & ML Ops)</option>
-              </select>
-            </div>
+
 
             <div>
               <label className="block text-xs font-mono-code text-slate-700 uppercase tracking-wider mb-2 font-bold">
@@ -124,7 +110,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors pl-11 pr-11"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
                   required
                 />
                 <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />

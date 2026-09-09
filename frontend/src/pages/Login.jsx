@@ -16,8 +16,8 @@ import {
 } from 'lucide-react';
 
 const Login = () => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,37 +42,10 @@ const Login = () => {
       else navigate('/predictor');
 
     } catch (err) {
-      // Fallback mock-authentication layer as described in README
-      let role = 'passenger';
-      if (username.toLowerCase() === 'admin') role = 'admin';
-      else if (username.toLowerCase() === 'dispatcher') role = 'dispatcher';
-      
-      const mockToken = 'mock-jwt-token-fallback';
-      
-      login({ token: mockToken, role, username });
-      
-      if (role === 'admin') navigate('/admin');
-      else if (role === 'dispatcher') navigate('/dashboard');
-      else navigate('/predictor');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickDemoLogin = (demoRole) => {
-    let demoUsername = 'admin';
-    if (demoRole === 'dispatcher') demoUsername = 'dispatcher';
-    if (demoRole === 'passenger') demoUsername = 'jdoe123';
-
-    setUsername(demoUsername);
-    setPassword('demo123');
-
-    setTimeout(() => {
-      login({ token: 'mock-jwt-token-fallback', role: demoRole, username: demoUsername });
-      if (demoRole === 'admin') navigate('/admin');
-      else if (demoRole === 'dispatcher') navigate('/dashboard');
-      else navigate('/predictor');
-    }, 150);
   };
 
   return (
@@ -107,42 +80,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* 1-Click Instant Demo Role Selector */}
-          <div className="mb-6 p-4 rounded-2xl bg-slate-50 border border-sky-200 flex flex-col gap-2.5 shadow-inner">
-            <span className="text-[10px] font-mono-code text-sky-800 uppercase tracking-wider font-bold flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-              <span>1-Click Instant Role Demo:</span>
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin('admin')}
-                className="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-xs font-mono-code font-bold transition-all flex flex-col items-center gap-1 hover:scale-105 shadow-sm"
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin('dispatcher')}
-                className="px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-mono-code font-bold transition-all flex flex-col items-center gap-1 hover:scale-105 shadow-sm"
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>Dispatcher</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin('passenger')}
-                className="px-2.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-mono-code font-bold transition-all flex flex-col items-center gap-1 hover:scale-105 shadow-sm"
-              >
-                <Compass className="w-3.5 h-3.5" />
-                <span>Passenger</span>
-              </button>
-            </div>
-          </div>
-
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-xl mb-6 text-xs font-mono-code font-medium">
               {error}
@@ -150,7 +87,7 @@ const Login = () => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4" autoComplete="off">
             
             <div>
               <label className="block text-xs font-mono-code text-slate-700 uppercase tracking-wider mb-2 font-bold">
@@ -162,7 +99,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors pl-11"
-                  placeholder="admin, dispatcher, or jdoe123"
+                  autoComplete="off"
                   required
                 />
                 <User className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
@@ -179,7 +116,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors pl-11 pr-11"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
                   required
                 />
                 <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
