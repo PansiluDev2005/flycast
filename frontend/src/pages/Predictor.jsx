@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import {
+import api from '../utils/api';
   Search,
   Clock,
   AlertTriangle,
@@ -132,7 +133,7 @@ const Predictor = () => {
         distance: parseInt(distance, 10)
       };
 
-      const res = await axios.post('http://localhost:5000/api/ml/predict', payload, {
+      const res = await api.post('/ml/predict', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -202,7 +203,7 @@ const Predictor = () => {
 
     try {
       const token = user?.token || 'mock-token';
-      await axios.post('http://localhost:5000/api/watchlist', {
+      await api.post('/watchlist', {
         flight_id: result.flight_id,
         carrier,
         origin,
@@ -251,7 +252,7 @@ const Predictor = () => {
     // Send to backend
     try {
       const token = user?.token || 'mock-token';
-      await axios.post('http://localhost:5000/api/notifications', {
+      await api.post('/notifications', {
         flightId: result.flight_id,
         action: actionType,
         message: msg,

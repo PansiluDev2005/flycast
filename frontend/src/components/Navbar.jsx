@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
+import api from '../utils/api';
   Plane, 
   LogOut, 
   Bell, 
@@ -45,7 +46,7 @@ const Navbar = () => {
 
       // 2. Fetch server notifications and merge
       try {
-        const res = await axios.get('http://localhost:5000/api/notifications', {
+        const res = await api.get('/notifications', {
           headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
         });
         const serverNotifs = Array.isArray(res.data) ? res.data.filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3') : [];
@@ -88,7 +89,7 @@ const Navbar = () => {
     localStorage.setItem('flycast_realtime_notifications', JSON.stringify(updated));
 
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+      await api.put(`/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
     } catch (err) {

@@ -86,7 +86,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Node API Gateway running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Node API Gateway running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
 

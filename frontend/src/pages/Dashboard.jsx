@@ -23,6 +23,7 @@ import {
   Check
 } from 'lucide-react';
 import { 
+import api from '../utils/api';
   ResponsiveContainer, 
   BarChart, 
   Bar, 
@@ -63,7 +64,7 @@ const Dashboard = () => {
     } catch (e) {}
 
     try {
-      const res = await axios.get('http://localhost:5000/api/notifications', {
+      const res = await api.get('/notifications', {
         headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
       const serverNotifs = Array.isArray(res.data) ? res.data.filter(n => n._id !== 'notif-1' && n._id !== 'notif-2' && n._id !== 'notif-3') : [];
@@ -88,7 +89,7 @@ const Dashboard = () => {
     setIncomingDirectives(updated);
     localStorage.setItem('flycast_realtime_notifications', JSON.stringify(updated));
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+      await api.put(`/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
     } catch (e) {}
@@ -120,7 +121,7 @@ const Dashboard = () => {
       
       const token = user?.token || 'mock-token';
 
-      const res = await axios.post('http://localhost:5000/api/ml/predict/bulk', formData, {
+      const res = await api.post('/ml/predict/bulk', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -172,7 +173,7 @@ const Dashboard = () => {
 
     try {
       const token = user?.token || 'mock-token';
-      await axios.post('http://localhost:5000/api/notifications', { flightId, action }, {
+      await api.post('/notifications', { flightId, action }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setActionSuccessMsg(`Dispatched operational directive: "${action}" for ${flightId}`);

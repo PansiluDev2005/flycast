@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { 
+import api from '../utils/api';
   Plane, 
   Clock, 
   AlertTriangle, 
@@ -25,7 +26,7 @@ const PassengerDashboard = () => {
 
   const fetchWatchlist = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/watchlist', {
+      const res = await api.get('/watchlist', {
         headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
       
@@ -63,7 +64,7 @@ const PassengerDashboard = () => {
 
     // 3. Delete from backend database
     try {
-      await axios.delete(`http://localhost:5000/api/watchlist/${flightId}`, {
+      await api.delete(`/watchlist/${flightId}`, {
         headers: { Authorization: `Bearer ${user?.token || 'mock-token'}` }
       });
     } catch (err) {

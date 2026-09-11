@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
+import api from '../utils/api';
   Users, 
   Activity, 
   RefreshCw, 
@@ -157,8 +158,8 @@ const Admin = () => {
   const fetchData = async () => {
     try {
       const [usersRes, metricsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/users', { headers: { Authorization: `Bearer ${user.token || 'mock-token'}` } }),
-        axios.get('http://localhost:5000/api/admin/metrics', { headers: { Authorization: `Bearer ${user.token || 'mock-token'}` } })
+        api.get('/admin/users', { headers: { Authorization: `Bearer ${user.token || 'mock-token'}` } }),
+        api.get('/admin/metrics', { headers: { Authorization: `Bearer ${user.token || 'mock-token'}` } })
       ]);
       const fetchedUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
       setUsers(fetchedUsers);
@@ -214,7 +215,7 @@ const Admin = () => {
     // Dispatch to Node API backend
     try {
       const token = user?.token || 'mock-token';
-      await axios.post('http://localhost:5000/api/notifications', {
+      await api.post('/notifications', {
         flightId: flight.flight_id,
         action: actionType,
         message: msg,
@@ -252,7 +253,7 @@ const Admin = () => {
 
     try {
       const token = user?.token || 'mock-token';
-      await axios.post('http://localhost:5000/api/notifications', {
+      await api.post('/notifications', {
         flightId: composerFlight.toUpperCase(),
         action: 'Executive Directive',
         message: newNotif.message,
@@ -273,7 +274,7 @@ const Admin = () => {
     localStorage.setItem('flycast_realtime_users', JSON.stringify(updated));
 
     try {
-      await axios.put(`http://localhost:5000/api/admin/users/${userId}/role`, { role }, {
+      await api.put(`/admin/users/${userId}/role`, { role }, {
         headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
     } catch (err) {
@@ -288,7 +289,7 @@ const Admin = () => {
     localStorage.setItem('flycast_realtime_users', JSON.stringify(updated));
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await api.delete(`/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
     } catch (err) {
@@ -314,7 +315,7 @@ const Admin = () => {
     setNewPassword('');
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { 
+      await api.post('/auth/register', { 
         username: newUser.username, 
         password: pwd, 
         role: newUser.role 
@@ -339,7 +340,7 @@ const Admin = () => {
     ]);
 
     try {
-      await axios.post('http://localhost:5000/api/admin/retrain', {}, {
+      await api.post('/admin/retrain', {}, {
         headers: { Authorization: `Bearer ${user.token || 'mock-token'}` }
       });
     } catch (err) {}

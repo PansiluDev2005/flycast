@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
+import api from '../utils/api';
   UserPlus, 
   Lock, 
   User, 
@@ -27,10 +28,10 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { username, password, role });
+      await api.post('/auth/register', { username, password, role });
       
       try {
-        const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+        const res = await api.post('/auth/login', { username, password });
         const { token } = res.data;
         login({ token, role, username });
       } catch (authErr) {
