@@ -1,9 +1,9 @@
+import api from '../utils/api';
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
-import api from '../utils/api';
   UserPlus, 
   Lock, 
   User, 

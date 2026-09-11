@@ -1,9 +1,9 @@
+import api from '../utils/api';
 import { useContext, useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { 
-import api from '../utils/api';
   Plane, 
   LogOut, 
   Bell, 
