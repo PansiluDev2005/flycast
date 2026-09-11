@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "backend-ml.app:app"
