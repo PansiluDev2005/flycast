@@ -85,7 +85,7 @@ const PRESET_FLIGHTS = [
 ];
 
 const Predictor = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   // Form State (Defaulting to SriLankan Airlines UL503 Colombo to London)
   const [flightId, setFlightId] = useState('UL503');
@@ -121,7 +121,7 @@ const Predictor = () => {
     setSavedSuccess(false);
 
     try {
-      const token = user?.token || 'mock-token';
+      const token = user?.token || 'dummy';
       const payload = {
         flight_id: flightId,
         carrier: carrier.toUpperCase(),
@@ -162,7 +162,14 @@ const Predictor = () => {
 
     } catch (err) {
       console.error('Prediction API error:', err);
-      setError('Prediction service is unreachable. Please ensure the ML backend is running.');
+      if (err.response && err.response.status === 401) {
+        logout();
+        setError('Your session has expired. Please try again or log back in.');
+      } else if (err.response && err.response.data) {
+        setError(err.response.data.error || err.response.data.message || 'An error occurred during prediction.');
+      } else {
+        setError('Prediction service is unreachable. Please ensure the ML backend is running.');
+      }
     } finally {
       setLoading(false);
     }
@@ -421,6 +428,9 @@ const Predictor = () => {
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
                   placeholder="e.g. AA, DL, UA"
                   required
+                  maxLength={3}
+                  pattern="^[A-Z]{2,3}$"
+                  title="2 or 3 letter IATA Carrier Code"
                 />
               </div>
 
@@ -437,6 +447,9 @@ const Predictor = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
                     placeholder="e.g. JFK"
                     required
+                    maxLength={3}
+                    pattern="^[A-Z]{3}$"
+                    title="3 letter IATA Airport Code"
                   />
                   <MapPin className="w-4 h-4 text-sky-600 absolute right-3.5 top-3.5" />
                 </div>
@@ -455,6 +468,9 @@ const Predictor = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code uppercase focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
                     placeholder="e.g. LAX"
                     required
+                    maxLength={3}
+                    pattern="^[A-Z]{3}$"
+                    title="3 letter IATA Airport Code"
                   />
                   <MapPin className="w-4 h-4 text-blue-600 absolute right-3.5 top-3.5" />
                 </div>
@@ -487,6 +503,9 @@ const Predictor = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 text-sm font-mono-code focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-colors"
                     placeholder="e.g. 0800 or 1430"
                     required
+                    maxLength={4}
+                    pattern="^([01]\d|2[0-3])[0-5]\d$"
+                    title="4 digit military time (e.g. 0800, 1430)"
                   />
                   <Clock className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
                 </div>

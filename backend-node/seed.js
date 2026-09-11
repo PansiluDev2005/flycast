@@ -10,15 +10,16 @@ const seedUsers = async () => {
 
     const usersToSeed = [
       { username: 'admin', password: '1234', role: 'admin' },
-      { username: 'staff', password: '1234', role: 'dispatcher' },
-      { username: 'passenger', password: '1234', role: 'passenger' }
+      { username: 'dispatcher', password: '1234', role: 'dispatcher' },
+      { username: 'staff', password: '1234', role: 'dispatcher' }
     ];
 
     for (const u of usersToSeed) {
       let user = await User.findOne({ username: u.username });
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(u.password, salt);
+      
       if (!user) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(u.password, salt);
         user = new User({
           username: u.username,
           password: hashedPassword,
@@ -27,7 +28,10 @@ const seedUsers = async () => {
         await user.save();
         console.log(`Created user: ${u.username}`);
       } else {
-        console.log(`User already exists: ${u.username}`);
+        user.password = hashedPassword;
+        user.role = u.role;
+        await user.save();
+        console.log(`Updated existing user: ${u.username}`);
       }
     }
     

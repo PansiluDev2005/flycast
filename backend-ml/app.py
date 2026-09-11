@@ -5,6 +5,9 @@ import pickle
 import os
 import warnings
 from datetime import datetime
+import airportsdata
+
+global_airports = airportsdata.load('IATA')
 
 # Suppress the InconsistentVersionWarning from scikit-learn
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
@@ -73,34 +76,53 @@ def resolve_airport(val):
     clean_val = str(val).strip().upper()
     return AIRPORT_ALIASES.get(clean_val, val)
 
-def safe_transform(le, series, default=0):
-    if not le: return pd.Series([default] * len(series))
+def safe_transform(le, series, field_name="Value"):
+    if not le: return pd.Series([0] * len(series))
     known_classes = set(le.classes_)
-    return series.apply(lambda x: le.transform([x])[0] if x in known_classes else (
-        le.transform([resolve_carrier(x)])[0] if resolve_carrier(x) in known_classes else (
-            le.transform([resolve_airport(x)])[0] if resolve_airport(x) in known_classes else le.transform([le.classes_[0]])[0]
-        )
-    ))
-
-def safe_transform_single(le, val, default=0):
-    if not le: return default
-    try:
-        clean_val = str(val).strip().upper() if val else ''
-        if clean_val in le.classes_:
-            return le.transform([clean_val])[0]
+    
+    def transform_func(x):
+        clean_val = str(x).strip().upper() if x else ''
         
-        # Check alias resolvers
-        resolved_c = resolve_carrier(clean_val)
-        if resolved_c in le.classes_:
-            return le.transform([resolved_c])[0]
+        # Validate that the airport actually exists in the real world
+        if field_name in ["Origin Airport", "Destination Airport"] and clean_val not in global_airports and clean_val not in known_classes:
+            raise ValueError(f"Invalid {field_name}: '{clean_val}' is not a real-world IATA airport code.")
             
+        if clean_val in known_classes:
+            return le.transform([clean_val])[0]
+        resolved_c = resolve_carrier(clean_val)
+        if resolved_c in known_classes and resolved_c != clean_val:
+            return le.transform([resolved_c])[0]
         resolved_a = resolve_airport(clean_val)
-        if resolved_a in le.classes_:
+        if resolved_a in known_classes and resolved_a != clean_val:
             return le.transform([resolved_a])[0]
             
+        # Fallback to default class instead of crashing so any valid real-world user input works
         return le.transform([le.classes_[0]])[0]
-    except Exception:
-        return default
+        
+    return series.apply(transform_func)
+
+def safe_transform_single(le, val, field_name="Value"):
+    if not le: return 0
+    clean_val = str(val).strip().upper() if val else ''
+    
+    # Validate that the airport actually exists in the real world
+    if field_name in ["Origin Airport", "Destination Airport"] and clean_val not in global_airports and clean_val not in le.classes_:
+        raise ValueError(f"Invalid {field_name}: '{clean_val}' is not a recognized real-world IATA airport code.")
+        
+    if clean_val in le.classes_:
+        return le.transform([clean_val])[0]
+    
+    # Check alias resolvers
+    resolved_c = resolve_carrier(clean_val)
+    if resolved_c in le.classes_ and resolved_c != clean_val:
+        return le.transform([resolved_c])[0]
+        
+    resolved_a = resolve_airport(clean_val)
+    if resolved_a in le.classes_ and resolved_a != clean_val:
+        return le.transform([resolved_a])[0]
+        
+    # Fallback to default class instead of crashing so any valid real-world user input works
+    return le.transform([le.classes_[0]])[0]
 
 def process_flight(flight_data):
     """
@@ -119,9 +141,9 @@ def process_flight(flight_data):
     crs_dep_time = int(flight_data.get('crs_dep_time', 1300))
     distance = int(flight_data.get('distance', 2500))
 
-    airline_enc = safe_transform_single(models.get('le_carrier.pkl'), carrier)
-    origin_enc = safe_transform_single(models.get('le_origin.pkl'), origin)
-    dest_enc = safe_transform_single(models.get('le_dest.pkl'), dest)
+    airline_enc = safe_transform_single(models.get('le_carrier.pkl'), carrier, "Carrier Code")
+    origin_enc = safe_transform_single(models.get('le_origin.pkl'), origin, "Origin Airport")
+    dest_enc = safe_transform_single(models.get('le_dest.pkl'), dest, "Destination Airport")
 
     return [month, day_of_week, airline_enc, origin_enc, dest_enc, crs_dep_time, distance]
 
@@ -165,7 +187,9 @@ def predict():
             
         return jsonify(results), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        tb = traceback.format_exc()
+        return jsonify({"error": str(e), "traceback": tb}), 400
 
 
 @app.route('/predict-bulk', methods=['POST'])
@@ -192,9 +216,9 @@ def predict_bulk():
         features = pd.DataFrame()
         features['Month'] = df['Month']
         features['DayOfWeek'] = df['DayOfWeek']
-        features['AIRLINE'] = safe_transform(models['le_carrier.pkl'], df['CARRIER'])
-        features['ORIGIN'] = safe_transform(models['le_origin.pkl'], df['ORIGIN'])
-        features['DEST'] = safe_transform(models['le_dest.pkl'], df['DEST'])
+        features['AIRLINE'] = safe_transform(models['le_carrier.pkl'], df['CARRIER'], "Carrier Code")
+        features['ORIGIN'] = safe_transform(models['le_origin.pkl'], df['ORIGIN'], "Origin Airport")
+        features['DEST'] = safe_transform(models['le_dest.pkl'], df['DEST'], "Destination Airport")
         features['CRS_DEP_TIME'] = pd.to_numeric(df['CRS_DEP_TIME'], errors='coerce').fillna(1200).astype(int)
         features['DISTANCE'] = pd.to_numeric(df['DISTANCE'], errors='coerce').fillna(1000).astype(int)
         

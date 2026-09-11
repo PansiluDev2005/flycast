@@ -694,8 +694,8 @@ The platform features an integrated authentication layer with instant 1-click lo
 | Role | Username | Password | Privileges & Accessible Modules |
 | :--- | :--- | :--- | :--- |
 | **Administrator** | `admin` | `1234` | Executive Console, Prediction Stream, Model Retraining, User Matrix, Predictor, Dispatcher Triage |
-| **Flight Dispatcher** | `staff` | `1234` | Batch Manifest CSV Ingestion, Fleet Analytics, Crew Dispatch, Admin Directives Receiver |
-| **Passenger** | `passenger` | `1234` | Flight Delay Predictor, Route Trajectory HUD, Personal Digital Boarding Pass Watchlist |
+| **Dispatcher** | `dispatcher` | `1234` | Batch Manifest CSV Ingestion, Fleet Analytics, Crew Dispatch, Admin Directives Receiver |
+| **Staff** | `staff` | `1234` | Flight Delay Predictor, Route Trajectory HUD, Personal Digital Boarding Pass Watchlist |
 
 ---
 

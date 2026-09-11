@@ -13,7 +13,8 @@ router.post('/predict', protect, async (req, res) => {
     const response = await axios.post(`${process.env.FLASK_API_URL}/predict`, req.body);
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ message: 'Error communicating with ML service', error: error.message });
+    const errorMsg = error.response?.data?.error || error.message;
+    res.status(error.response?.status || 500).json({ message: 'Error communicating with ML service', error: errorMsg });
   }
 });
 
@@ -36,7 +37,8 @@ router.post('/predict/bulk', protect, authorize('dispatcher', 'admin'), upload.s
     res.json(response.data);
   } catch (error) {
     if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-    res.status(500).json({ message: 'Error processing bulk prediction', error: error.message });
+    const errorMsg = error.response?.data?.error || error.message;
+    res.status(error.response?.status || 500).json({ message: 'Error processing bulk prediction', error: errorMsg });
   }
 });
 

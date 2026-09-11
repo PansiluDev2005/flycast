@@ -99,31 +99,33 @@ const Profile = () => {
       </div>
 
       {/* Developer API & Integration Credentials */}
-      <div className="glass-panel p-6 sm:p-8 rounded-2xl border-slate-200 bg-white shadow-md flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <Key className="w-5 h-5 text-sky-600" />
-            <h3 className="text-lg font-bold text-slate-900 font-heading">Live API Key Token</h3>
+      {user?.role === 'admin' && (
+        <div className="glass-panel p-6 sm:p-8 rounded-2xl border-slate-200 bg-white shadow-md flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Key className="w-5 h-5 text-sky-600" />
+              <h3 className="text-lg font-bold text-slate-900 font-heading">Live API Key Token</h3>
+            </div>
+            <span className="text-[10px] font-mono-code text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold">
+              VALID
+            </span>
           </div>
-          <span className="text-[10px] font-mono-code text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold">
-            VALID
-          </span>
-        </div>
-        <p className="text-xs text-slate-500">
-          Use this token for headless programmatic inferences with the Python Flask ML microservice endpoint (`POST /predict`).
-        </p>
+          <p className="text-xs text-slate-500">
+            Use this token for headless programmatic inferences with the Python Flask ML microservice endpoint (`POST /predict`).
+          </p>
 
-        <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-300 shadow-inner">
-          <span className="text-xs font-mono-code text-sky-900 font-bold select-all truncate">{mockApiKey}</span>
-          <button
-            onClick={copyToClipboard}
-            className="p-2 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 transition-colors shrink-0 ml-2 shadow-sm"
-            title="Copy API Token"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-300 shadow-inner">
+            <span className="text-xs font-mono-code text-sky-900 font-bold select-all truncate">{mockApiKey}</span>
+            <button
+              onClick={copyToClipboard}
+              className="p-2 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 transition-colors shrink-0 ml-2 shadow-sm"
+              title="Copy API Token"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
